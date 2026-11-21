@@ -609,10 +609,10 @@ Network layer has unreliable communication. Needs a reliable transport layer pro
 
 \begin{itemize}
 \item \texttt{rdt1.0}: assumes reliable channel. no error.
-\item \texttt{rdt2.0}: handles bit errors; corrupted ACKs/NAKs cannot be recovered.
+\item \texttt{rdt2.0}: detect bit errors with checksum; corrupted ACKs/NAKs cannot be recovered.
 \item \texttt{rdt2.1}: use sequence numbers to discard duplicates.
-\item \texttt{rdt2.2}: no NAKs; send prev ACK. Duplicate indicates error.
-\item \texttt{rdt3.0}: handles packet loss with timer (if packet is delayed). Retransmit when timeout.
+\item \texttt{rdt2.2}: no NAKs; send ACK w/ seq \# of prev \linebreak received packet. Duplicate indicates error.
+\item \texttt{rdt3.0}: handles packet loss or corruption with timer (if packet is delayed). Retransmit only on timeout.
 \end{itemize}
 
 \textbf{rdt 3.0 Stop and Wait} $U_{\mathrm{s}}=\frac{L/R}{RTT+L/R}$
