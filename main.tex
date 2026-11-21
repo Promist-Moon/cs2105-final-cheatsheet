@@ -56,6 +56,7 @@
 \usepackage{array}
 \usepackage{booktabs}
 \usepackage{xcolor}
+\usepackage{colortbl}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins, breakable}
 
@@ -735,11 +736,11 @@ exceptions.)
 \toprule
 \normalfont\textbf{IPv4 address / range} & \textbf{Use} \\
 \midrule
-0.0.0.0 & Unspecified address; e.g. source before host obtains an address. \\
+\rowcolor{gray!12}0.0.0.0 & Unspecified address; e.g. source before host obtains an address. \\
 127.0.0.0/8 & Loopback within the host; typically \texttt{127.0.0.1}. \\
-10.0.0.0/8 & \multirow{3}{*}{\parbox{.55\linewidth}{Private addresses; not routed on the public Internet.}} \\
-172.16.0.0/12 & \\
-192.168.0.0/16 & \\
+\rowcolor{gray!12}10.0.0.0/8 & \\
+\rowcolor{gray!12}172.16.0.0/12 & \\
+\rowcolor{gray!12}192.168.0.0/16 & \multirow{-3}{*}{\parbox{.55\linewidth}{Private addresses; not routed on the public Internet.}} \\
 255.255.255.255 & Limited broadcast on the local network; not forwarded by routers. \\
 \bottomrule
 \end{tabular}\par\endgroup
