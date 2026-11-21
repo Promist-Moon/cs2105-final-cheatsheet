@@ -823,8 +823,7 @@ Link Layer Services.
 \begin{enumerate}
 \item \textbf{Framing: } encapsulate data into a frame, add header and trailer
 \item \textbf{Link Access Control: } When multiple nodes share a single link, coordinate which nodes can send frames at each point of time
-\item \textbf{Error detection}
-\item \textbf{Error correction}
+\item \textbf{Error detection and correction}
 \item \textbf{Reliable delivery: } often used on error-prone delivery like wireless link.
 \end{enumerate}
 
@@ -861,6 +860,7 @@ When node has data to send transmit at full channel data rate $R$, and no a prio
 \item Nodes transmit at the start of the next slot when they have a frame.
 \item After a collision, retransmit in each subsequent slot with probability \(p\).
 \end{itemize}
+\textit{Maximum efficiency: } $\tfrac{1}{e}$
 \begin{compactfigure}
 \slottedalohadiagram
 \end{compactfigure}
@@ -873,6 +873,7 @@ No time slots, no synchronisation. When fresh frame:
 \item If collision: data transmission is a failure. Wait for 1 frame transmission time, retransmit in each subsequent slot with probability \(p\)
 \item Chance of collision increases.
 \end{itemize}
+\textit{Maximum efficiency: } $\tfrac{1}{2e}$
 
 \begin{compactfigure}
 \includegraphics[width=0.75\linewidth]{link/unslotted-aloha.png}
@@ -931,32 +932,13 @@ Master node polls each node in a round-robin fashion.
 \begin{itemize}
 \item Master informs node 1, it can transmit up to some $N_{max}$.
 \item After node 1 transmits, master node tells node 2 it (node 2) can transmit up to $N_{max}$
+\item Cons: \textit{centralised} - master node as single point of failure.
 \end{itemize}
 
 \textbf{Token Passing}
 Special frame, \textbf{token}, is passed from one node to
 next. When node receives token, hold onto the token only if some frames to transmit. Otherwise, forward token
-to next node. Cons: Token loss can disrupt the system, and a node failure can break the ring.
-
-\begin{center}
-\resizebox{\columnwidth}{!}{%
-  \begin{tabular}{lcc}
-    \hline
-    \textbf{Protocol} & \textbf{Efficiency} & \textbf{Decentralized} \\
-    \hline
-    Polling
-    & Higher; polling overhead
-    & No; master node as single point of failure \\
-
-    Token Passing
-    & Higher; token-passing overhead
-    & Yes \\
-    \hline
-  \end{tabular}%
-}
-
-\vspace{2mm}
-\end{center}
+to next node. Cons: Token loss can disrupt the system, and a node failure can break the ring. \textit{Decentralised}.
 
 \subsection{Channel Partitioning Protocols}
 Divide shared broadcast channel into smaller, dedicated sub-channels and allocate one to each node. Completely collision-free, but inefficient in low traffic. Perfectly fair.
@@ -966,6 +948,7 @@ Divide shared broadcast channel into smaller, dedicated sub-channels and allocat
 \item Assign each node a fixed-length time slot for transmitting one data frame.
 \item Unused nodes leave their slots idle (reduced efficiency).
 \item E.g., for six nodes, nodes 1, 3, and 4 transmit while slots 2, 5, and 6 remain idle.
+\item Max throughput: $\tfrac{R}{N}$
 \end{enumerate}
 
 \textbf{Frequency Division Multiple Access (FDMA)}
@@ -974,25 +957,8 @@ Divide shared broadcast channel into smaller, dedicated sub-channels and allocat
 \item Each node is assigned a fixed frequency band.
 \item Unused transmission time in frequency bands go idle.
 \item E.g.: 6 nodes, 1, 3, 4 have frames, frequency bands 2, 5, 6 are idle.
+\item Max throughput: $\tfrac{R}{N}$
 \end{enumerate}
-
-\begin{center}
-\scriptsize
-\resizebox{\columnwidth}{!}{%
-  \begin{tabular}{lcc}
-    \hline
-    \textbf{Protocol} & \textbf{Efficiency} & \textbf{Decentralized} \\
-    \hline
-    TDMA & Inefficient; idle slots; max. throughput \(R/N\)
-    & Yes \\
-
-    FDMA & Inefficient; unused frequencies; max. throughput \(R/N\)
-    & Yes \\
-    \hline
-  \end{tabular}%
-}
-\vspace{2mm}
-\end{center}
 
 \subsection{Error Detection}
 \begin{compactfigure}
