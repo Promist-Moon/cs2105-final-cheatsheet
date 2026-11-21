@@ -813,12 +813,11 @@ information. E.g. error reporting: unreachable host / network / port / protocol 
 \sectionrule
 Transfers IP datagrams between adjacent nodes (hosts or routers) over one link, encapsulated in link-layer frames.
 
-\textbf{Communication channel: } the transmission medium of the data signals. E.g. copper wire, optical fiber, terrestrial radio, Satellite. \\
+\textbf{Communication channel: } transmission medium of the data signals. E.g. copper wire, optical fiber, satellite. \\
 \textbf{Nodes: } Devices exchanging data. e.g. hosts, routers
 \textbf{Adjacent: } Single hop connects the two nodes
 \textbf{Frame: } Layer-2 packet
-
-Implemented in adapter eg NIC (Network Interface Card)
+\textbf{NIC (Network Interface Card)} takes datagram and encapsulates it into a frame. Fills the header frame and transfers into physical link.
 
 Link Layer Services.
 \begin{enumerate}
@@ -848,8 +847,12 @@ Desired Properties:
 
 coordination about channel sharing must use channel itself!: no out-of-band channel signaling
 
+\subsection{Protocols}
+Solve the Multiple Access Problem - node collisions and data corrupting.
+
 \subsection{Random Access Protocols}
-Random access protocols specify how to detect collisions and how to recover from collisions
+Allow any active node to transmit at the full rate of the channel ($R$ bps) on demand. Not collision-free.
+Protocols dictate how to detect and recover from collisions. Efficient with light traffic.
 
 \textbf{Slotted ALOHA}
 When node has data to send transmit at full channel data rate $R$, and no a priori coordination among nodes. Data sent in frames of size $L$ bits.
@@ -892,24 +895,21 @@ Backoff Algorithm: after each collision, randomly select waiting time \(K\) befo
 
 \begin{center}
 \resizebox{\columnwidth}{!}{%
-  \begin{tabular}{lcccc}
+  \begin{tabular}{lccc}
     \hline
-    \textbf{Protocol} & \textbf{Collision-Free} & \textbf{Efficiency} & \textbf{Fairness} & \textbf{Decentralized} \\
+    \textbf{Protocol} & \textbf{Efficiency} & \textbf{Fairness} & \textbf{Decentralized} \\
     \hline
     Slotted ALOHA
-    & No
     & \(R\) one node; \(37\%\) many nodes
     & Perfectly fair
     & Yes \\
 
     Pure ALOHA
-    & No
     & \(R\) one node; \(18\%\) many nodes
     & Perfectly fair
     & Yes \\
 
     CSMA / CSMA/CD
-    & No
     & Yes
     & Yes
     & Yes \\
@@ -923,6 +923,9 @@ $d_{prop}$ d. prop. to diameter (maximum distance between any 2 nodes in the net
 $d_{trans}$ d. prop. frame size
 
 \subsection{Taking Turns Protocols}
+Nodes take turns. Achieve high single-node throughput of random access when load is light, while maintaining collision-free fairness
+of channel partitioning when load is heavy. Perfectly fair. No collisions or wasted slots, but high overhead. 
+
 \textbf{Polling}
 Master node polls each node in a round-robin fashion.
 \begin{itemize}
@@ -937,17 +940,15 @@ to next node. Cons: Token loss can disrupt the system, and a node failure can br
 
 \begin{center}
 \resizebox{\columnwidth}{!}{%
-  \begin{tabular}{lccc}
+  \begin{tabular}{lcc}
     \hline
-    \textbf{Protocol} & \textbf{Collision-Free} & \textbf{Efficiency} & \textbf{Decentralized} \\
+    \textbf{Protocol} & \textbf{Efficiency} & \textbf{Decentralized} \\
     \hline
     Polling
-    & Yes
     & Higher; polling overhead
     & No; master node as single point of failure \\
 
     Token Passing
-    & Yes
     & Higher; token-passing overhead
     & Yes \\
     \hline
@@ -955,10 +956,10 @@ to next node. Cons: Token loss can disrupt the system, and a node failure can br
 }
 
 \vspace{2mm}
-\textbf{Fairness:} Both are perfectly fair.
 \end{center}
 
 \subsection{Channel Partitioning Protocols}
+Divide shared broadcast channel into smaller, dedicated sub-channels and allocate one to each node. Completely collision-free, but inefficient in low traffic. Perfectly fair.
 \textbf{Time Division Multiple Access (TDMA)}
 \begin{enumerate}
 \item Channel access is divided into repeating rounds, or time frames.
@@ -978,20 +979,19 @@ to next node. Cons: Token loss can disrupt the system, and a node failure can br
 \begin{center}
 \scriptsize
 \resizebox{\columnwidth}{!}{%
-  \begin{tabular}{lcccc}
+  \begin{tabular}{lcc}
     \hline
-    \textbf{Protocol} & \textbf{Collision-Free} & \textbf{Efficiency} & \textbf{Decentralized} \\
+    \textbf{Protocol} & \textbf{Efficiency} & \textbf{Decentralized} \\
     \hline
-    TDMA & Yes & Inefficient; idle slots; max. throughput \(R/N\)
+    TDMA & Inefficient; idle slots; max. throughput \(R/N\)
     & Yes \\
 
-    FDMA & Yes & Inefficient; unused frequencies; max. throughput \(R/N\)
+    FDMA & Inefficient; unused frequencies; max. throughput \(R/N\)
     & Yes \\
     \hline
   \end{tabular}%
 }
 \vspace{2mm}
-\textbf{Fairness:} Both are perfectly fair.
 \end{center}
 
 \subsection{Error Detection}
