@@ -57,6 +57,8 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{colortbl}
+\usepackage[normalem]{ulem}
+\newcommand{\del}[1]{{\color{red}\sout{#1}}} % mark for deletion; set body to {} to hide all
 \usepackage{tcolorbox}
 \tcbuselibrary{skins, breakable}
 
@@ -747,28 +749,24 @@ exceptions.)
 
 \textbf{Subnet.} A network formed by a group of “directly” interconnected host \textbf{interfaces}. Links b/w routers count as subnets. Hosts in the same subnet have the same IP address prefix. Can reach each other without router.
 
-\textbf{Classless Inter-domain Routing (CIDR).} Internet's IP Address assigning strategy.
-Address format: \texttt{a.b.c.d/x}, where \texttt{x} is the number of bits in subnet prefix.
+\textbf{Classless Inter-domain Routing (CIDR).} IP Address assigning strategy.
+\texttt{a.b.c.d/x}, where \texttt{x} is \# of bits in subnet prefix. Classless: \texttt{x} can be any number
 
 Subnet mask determines which subnet an IP address belongs to. Set all subnet bits t 1 and host id bits to 0.
 
 \textbf{Hierarchical addressing} uses subnet masks to structure addresses into blocks. Pros are upstream routers do not need to know every single individual host or minor subnet.
 \textbf{Longest prefix match} compares dest. IP address against every entry in forwarding table and returns one with the longest matching subset mask.
 
-An ISP get a block of addresses from ICANN: Internet Corporation for Assigned Names and Numbers. Allocates addresses, manages DNS, and assigns domain names.
+An ISP gets a block of addresses from ICANN: Internet Corporation for Assigned Names and Numbers. Allocates addresses, manages DNS, assigns domain names.
 
 \subsection{Routing Algorithms}
 \textit{Autonomous System: }a collection of networks under the control of one single admin entity, e.g ISP or large company.
 \textit{Intra-AS routing.} Find a good path between two routers within an AS. Single admin - no policy decisions needed and routing focuses on performance. RIP/OSPF
 
-\textit{Bellman-Ford: }$d_x(y) = \min_v{\{c(x, v)+ d_v(y)\}}.$
+\textit{Bellman-Ford: }$d_x(y) = \min_v{\{c(x, v)+ d_v(y)\}}$\\
 $c(x, y)$: cost of link between routers x and y, infinity if x and y are not direct neighbours. $d_x(y)$: cost of least-cost path from x to y from x’s view.
 
-\textbf{Distance Vector Algorithms}
-Every router, x, y, z, sends its distance vectors to its directly connected neighbors.
-When x finds out that y is advertising a path to z that is cheaper than x currently knows, x will update its distance vector to z accordingly. x will note down that all packets for z should be sent to y. Update forwarding table of x
-After every router has exchanged several rounds of updates with its direct neighbors, all routers will know the least-cost paths to all the other routers.
-
+\textbf{Distance Vector Algorithms} Routers broadcast distances to their neighbours $\rightarrow$ update distances to other routers, and their forwarding tables. Eventually all routers know the shortest paths to all other routers.
 \textbf{Routing Information Protocol (RIP)} implements the DV algorithm. Uses hop count as the cost metric (i.e., insensitive to network congestion).
 Exchange routing table every 30 seconds over UDP port 520.
 “Self-repair”: if no update from a neighbour router for 3 minutes, assume neighbour has failed
