@@ -623,7 +623,7 @@ Network layer has unreliable communication. Needs a reliable transport layer pro
 \end{compactfigure}
 
 \subsection{Pipelined Protocols}
-\textbf{Go Back N} uses cumulative ACK - `ACK m' means all packets up to m are received. Receiver only ACKs packets arriving in order. Sender uses sliding window to keep track of unACK-ed packet, and timer for oldest unACK-ed.
+\textbf{Go Back N:} cumulative ACK; ACK[$m$] $\rightarrow$ all packets up to and incl. $m$ are received. Out-of-order packets discarded. One timer for oldest unACK-ed packet. On timeout, send $N$ packets in window from last unACK-ed
 \begin{compactfigure}
 \gobackndiagram
 \end{compactfigure}
