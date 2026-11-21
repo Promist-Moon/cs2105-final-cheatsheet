@@ -1,0 +1,1345 @@
+% ============================================================
+% A4 Landscape Exam Cheat Sheet Template
+% 4 columns per page, 2 pages (i.e. 8 columns total)
+% ============================================================
+\documentclass[10pt]{extarticle}
+
+% ---------- Page geometry: A4 landscape, tight margins ----------
+\usepackage[a4paper, landscape, margin=0.4cm]{geometry}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric}
+
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{bigdelim}
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{subcaption}
+
+% ---------- Multi-column layout ----------
+\usepackage{multicol}
+\setlength{\columnsep}{0.5cm}
+\setlength{\columnseprule}{0.4pt}
+
+% ---------- Fonts & sizing ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ---------- Math ----------
+\usepackage{amsmath, amssymb, amsthm}
+
+% ---------- Compact spacing ----------
+\usepackage{titlesec}
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=1.1em, itemsep=0pt, parsep=0pt, topsep=1pt}
+
+% Compact section headers
+\titleformat{\section}
+{\normalfont\bfseries\small\color{black}}
+{}{0em}{}
+\titlespacing{\section}{0pt}{4pt}{2pt}
+
+\titleformat{\subsection}
+{\normalfont\bfseries\footnotesize}
+{}{0em}{}
+\titlespacing{\subsection}{0pt}{3pt}{1pt}
+
+% ---------- Misc useful packages ----------
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+% Small author credit in the footer; no page numbers or header.
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\tiny Cheatsheet made by Emilia Ayu and Chow Bing Hang}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\footskip}{7pt}
+
+% Zero out paragraph indent/skip to save vertical space
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% Tiny custom box for formulas / key results
+\newtcolorbox{formulabox}[1][]{
+  colback=gray!5, colframe=black!60,
+  boxrule=0.3pt, arc=1pt,
+  left=2pt, right=2pt, top=1pt, bottom=1pt,
+  #1
+}
+
+% Shortcut for a compact rule under section titles
+\newcommand{\sectionrule}{\vspace{-2pt}\hrule\vspace{2pt}}
+
+% Center illustrations without the stretchable vertical padding of center.
+\newenvironment{compactfigure}{\par\begingroup\setlength{\parskip}{0pt}\noindent
+\begin{minipage}{\linewidth}\centering}{
+\end{minipage}\par\endgroup}
+
+% Draw UDP diagram
+\newcommand{\udpdiagram}{%
+  \begin{center}
+    \centering
+    \begin{tikzpicture}[
+        font=\tiny,
+        cell/.style={
+          draw,
+          minimum height=0.28cm,
+          minimum width=1.7cm,
+          align=center,
+          inner sep=1pt,
+          outer sep=0pt
+        }
+      ]
+
+      % Bit labels
+      \node at (0,0.85) {0};
+      \node at (1.7,0.85) {16};
+      \node at (3.4,0.85) {32};
+
+      \draw[<->, semithick] (0,1.02) -- node[above, inner sep=1pt] {32 bits} (3.4,1.02);
+
+      % Header fields
+      \node[cell] at (0.85,0.55) {Source port};
+      \node[cell] at (2.55,0.55) {Destination port};
+
+      \node[cell] at (0.85,0.27) {Length};
+      \node[cell] at (2.55,0.27) {Checksum};
+
+      % Data
+      \node[
+        draw,
+        minimum width=3.4cm,
+        minimum height=0.35cm,
+        align=center,
+        inner sep=1pt,
+        outer sep=0pt
+      ] at (1.7,-0.08) {Application data};
+
+    \end{tikzpicture}
+  \end{center}%
+}
+
+% Embedded Go-Back-N loss/recovery timeline, matching the lecture diagram.
+\definecolor{gbnblue}{RGB}{0,0,170}
+\definecolor{gbngreen}{RGB}{45,135,35}
+\definecolor{gbnred}{RGB}{220,55,45}
+\definecolor{gbncyan}{RGB}{65,190,235}
+\newcommand{\gbnwindowrow}[2]{%
+  \foreach \i in {0,...,7}{%
+    \pgfmathtruncatemacro{\gbnselected}{(\i>=#2)*(\i<#2+4)}%
+    \ifnum\gbnselected=1
+    \fill[gbnblue] ({.02+.36*\i},#1-.25) rectangle ({.37+.36*\i},#1+.25);
+    \node[text=white,font=\tiny] at ({.195+.36*\i},#1) {\i};
+    \else
+    \node[font=\tiny] at ({.195+.36*\i},#1) {\i};
+    \fi
+  }%
+}
+\newcommand{\gobackndiagram}{%
+  \resizebox{.98\linewidth}{!}{%
+    \begin{tikzpicture}[x=.42cm,y=.35cm,>=Stealth,
+        data/.style={-{Stealth[length=3pt,width=2.5pt]},draw=gbnblue,line width=.85pt},
+        ack/.style={-{Stealth[length=3pt,width=2.5pt]},draw=gbngreen,line width=.85pt},
+      life/.style={gbnred,dashed,line width=.7pt}]
+      % Headers and the sender-window snapshots.
+      \node[gbnblue,font=\bfseries\itshape\small] at (2.1,17.35) {sender window ($N=4$)};
+      \node[gbnblue,font=\bfseries\small] at (8,17.35) {sender};
+      \node[gbngreen,font=\bfseries\small] at (13.2,17.35) {receiver};
+      \gbnwindowrow{16.1}{0}
+      \gbnwindowrow{15.15}{0}
+      \gbnwindowrow{14.2}{0}
+      \gbnwindowrow{13.25}{0}
+      \gbnwindowrow{10.7}{1}
+      \gbnwindowrow{9.75}{2}
+      \gbnwindowrow{5.7}{2}
+      \gbnwindowrow{4.75}{2}
+      \gbnwindowrow{3.8}{2}
+      \gbnwindowrow{2.85}{2}
+      % Lifelines and timeout bracket.
+      \draw[life,->] (8,16.75) -- (8,.25);
+      \draw[life,->] (13.2,16.75) -- (13.2,.25);
+      \draw[gbncyan,line width=1.35pt] (7.82,14.25) -- (7.6,14.25) -- (7.6,5.55) -- (7.82,5.55);
+      % Initial four-packet pipeline; pkt2 is lost.
+      \node[anchor=east,font=\scriptsize] at (7.45,16.1) {send\ \ pkt0};
+      \node[anchor=east,font=\scriptsize] at (7.45,15.15) {send\ \ pkt1};
+      \node[anchor=east,font=\scriptsize] at (7.45,14.2) {send\ \ pkt2};
+      \node[anchor=east,font=\scriptsize] at (7.45,13.25) {send\ \ pkt3};
+      \node[anchor=east,font=\scriptsize] at (7.45,12.25) {(wait)};
+      \draw[data] (8.08,16.0) -- (13.1,14.65);
+      \draw[data] (8.08,15.1) -- (13.1,13.75);
+      \draw[data] (8.08,14.2) -- (10.65,13.5);
+      \draw[gbnred,line width=1.1pt] (10.45,13.72) -- (10.83,13.29);
+      \draw[gbnred,line width=1.1pt] (10.45,13.29) -- (10.83,13.72);
+      \node[gbnred,font=\bfseries\itshape\scriptsize,anchor=west] at (10.86,13.48) {loss};
+      \draw[data] (8.08,13.3) -- (13.1,11.95);
+      \node[anchor=west,font=\scriptsize] at (13.45,14.65) {receive pkt0, send ACK0};
+      \node[anchor=west,font=\scriptsize] at (13.45,13.75) {receive pkt1, send ACK1};
+      \node[anchor=west,font=\scriptsize] at (13.45,11.95) {receive pkt3, \textcolor{gbnred}{discard},};
+      \node[anchor=west,font=\scriptsize] at (14.35,11.05) {(re)send ACK1};
+      % ACK0/ACK1 open the window, then later packets are discarded.
+      \draw[ack] (13.1,14.52) -- (8.18,10.95);
+      \draw[ack] (13.1,13.64) -- (8.18,10.02);
+      \node[anchor=east,font=\tiny] at (7.45,10.7) {rcv ACK0, send pkt4};
+      \node[anchor=east,font=\tiny] at (7.45,9.75) {rcv ACK1, send pkt5};
+      \draw[data] (8.08,10.62) -- (13.1,9.0);
+      \draw[data] (8.08,9.67) -- (13.1,8.05);
+      \node[anchor=west,font=\tiny] at (13.45,9.0) {rcv pkt4, \textcolor{gbnred}{discard}, (re)send ACK1};
+      \node[anchor=west,font=\tiny] at (13.45,8.05) {rcv pkt5, \textcolor{gbnred}{discard}, (re)send ACK1};
+      \draw[ack] (13.1,11.85) -- (8.18,8.3);
+      \draw[ack] (13.1,8.9) -- (10.65,7.13);
+      \draw[ack] (13.1,7.95) -- (10.65,6.18);
+      \node[anchor=east,font=\tiny] at (7.45,8.05) {ignore duplicate ACK};
+      % pkt2 timer expires: resend every outstanding packet in the window.
+      \draw[gbnred,line width=.9pt] (4.55,6.25) circle (.34);
+      \draw[gbnred,line width=.8pt] (4.55,6.25) -- (4.55,6.52);
+      \draw[gbnred,line width=.8pt] (4.55,6.25) -- (4.34,6.08);
+      \node[gbnred,font=\bfseries\itshape\tiny,anchor=west] at (5.0,6.12) {pkt 2 timeout};
+      \node[anchor=east,font=\scriptsize] at (7.45,5.7) {(re)send\ \ pkt2};
+      \node[anchor=east,font=\scriptsize] at (7.45,4.75) {(re)send\ \ pkt3};
+      \node[anchor=east,font=\scriptsize] at (7.45,3.8) {(re)send\ \ pkt4};
+      \node[anchor=east,font=\scriptsize] at (7.45,2.85) {(re)send\ \ pkt5};
+      \draw[data] (8.08,5.62) -- (13.1,4.1);
+      \draw[data] (8.08,4.67) -- (13.1,3.15);
+      \draw[data] (8.08,3.72) -- (13.1,2.2);
+      \draw[data] (8.08,2.77) -- (13.1,1.25);
+      \node[anchor=west,font=\scriptsize] at (13.45,4.1) {rcv pkt2, deliver, send ACK2};
+      \node[anchor=west,font=\scriptsize] at (13.45,3.15) {rcv pkt3, deliver, send ACK3};
+      \node[anchor=west,font=\scriptsize] at (13.45,2.2) {rcv pkt4, deliver, send ACK4};
+      \node[anchor=west,font=\scriptsize] at (13.45,1.25) {rcv pkt5, deliver, send ACK5};
+      \draw[ack] (13.1,3.95) -- (11.7,2.94);
+      \draw[ack] (13.1,3.0) -- (11.7,1.99);
+      \draw[ack] (13.1,2.05) -- (11.7,1.04);
+      \draw[ack] (13.1,1.1) -- (11.7,.09);
+    \end{tikzpicture}%
+  }%
+}
+
+% Selective-repeat timeline: out-of-order packets are buffered and ACKed.
+\newcommand{\selectiverepeatdiagram}{%
+  \resizebox{.98\linewidth}{!}{%
+    \begin{tikzpicture}[x=.42cm,y=.35cm,>=Stealth,
+        data/.style={-{Stealth[length=3pt,width=2.5pt]},draw=gbnblue,line width=.85pt},
+        ack/.style={-{Stealth[length=3pt,width=2.5pt]},draw=gbngreen,line width=.85pt},
+      life/.style={gbnred,dashed,line width=.7pt}]
+      \node[gbnblue,font=\bfseries\itshape\small] at (2.1,17.35) {sender window ($N=4$)};
+      \node[gbnblue,font=\bfseries\small] at (8,17.35) {sender};
+      \node[gbngreen,font=\bfseries\small] at (13.2,17.35) {receiver};
+      \gbnwindowrow{16.1}{0} \gbnwindowrow{15.15}{0}
+      \gbnwindowrow{14.2}{0} \gbnwindowrow{13.25}{0}
+      \gbnwindowrow{10.7}{1} \gbnwindowrow{9.75}{2}
+      \gbnwindowrow{6.2}{2}
+      \draw[life,->] (8,16.75) -- (8,1.5);
+      \draw[life,->] (13.2,16.75) -- (13.2,1.5);
+      \draw[gbncyan,line width=1.35pt] (7.82,14.25) -- (7.6,14.25) -- (7.6,6.55) -- (7.82,6.55);
+      \node[anchor=east,font=\scriptsize] at (7.45,16.1) {send\ \ pkt0};
+      \node[anchor=east,font=\scriptsize] at (7.45,15.15) {send\ \ pkt1};
+      \node[anchor=east,font=\scriptsize] at (7.45,14.2) {send\ \ pkt2};
+      \node[anchor=east,font=\scriptsize] at (7.45,13.25) {send\ \ pkt3};
+      \node[anchor=east,font=\scriptsize] at (7.45,12.25) {(wait)};
+      \draw[data] (8.08,16.0) -- (13.1,14.65);
+      \draw[data] (8.08,15.1) -- (13.1,13.75);
+      \draw[data] (8.08,14.2) -- (10.65,13.5);
+      \draw[gbnred,line width=1.1pt] (10.45,13.72) -- (10.83,13.29);
+      \draw[gbnred,line width=1.1pt] (10.45,13.29) -- (10.83,13.72);
+      \node[gbnred,font=\bfseries\itshape\scriptsize,anchor=west] at (10.86,13.48) {loss};
+      \draw[data] (8.08,13.3) -- (13.1,11.95);
+      \node[anchor=west,font=\scriptsize] at (13.45,14.65) {receive pkt0, send ACK0};
+      \node[anchor=west,font=\scriptsize] at (13.45,13.75) {receive pkt1, send ACK1};
+      \node[anchor=west,font=\scriptsize] at (13.45,11.95) {receive pkt3, \textcolor{gbnred}{buffer},};
+      \node[anchor=west,font=\scriptsize] at (14.35,11.15) {send ACK3};
+      \draw[ack] (13.1,14.52) -- (8.18,10.95);
+      \draw[ack] (13.1,13.64) -- (8.18,10.07);
+      \node[anchor=east,font=\tiny] at (7.45,10.7) {rcv ACK0, send pkt4};
+      \node[anchor=east,font=\tiny] at (7.45,9.75) {rcv ACK1, send pkt5};
+      \draw[data] (8.08,10.62) -- (13.1,9.0);
+      \draw[data] (8.08,9.67) -- (13.1,8.05);
+      \node[anchor=west,font=\tiny] at (13.45,9.0) {rcv pkt4, \textcolor{gbnred}{buffer}, send ACK4};
+      \node[anchor=west,font=\tiny] at (13.45,8.05) {rcv pkt5, \textcolor{gbnred}{buffer}, send ACK5};
+      \draw[ack] (13.1,11.85) -- (8.18,8.28);
+      \draw[ack] (13.1,8.9) -- (10.65,7.12);
+      \draw[ack] (13.1,7.95) -- (10.65,6.17);
+      \node[anchor=east,font=\scriptsize] at (7.45,8.05) {rcv ACK3};
+      \draw[gbnred,line width=.9pt] (4.55,6.9) circle (.34);
+      \draw[gbnred,line width=.8pt] (4.55,6.9) -- (4.55,7.17);
+      \draw[gbnred,line width=.8pt] (4.55,6.9) -- (4.34,6.73);
+      \node[gbnred,font=\bfseries\itshape\tiny,anchor=west] at (5,6.77) {pkt 2 timeout};
+      \node[anchor=east,font=\scriptsize] at (7.45,6.2) {(re)send\ \ pkt2};
+      \draw[data] (8.08,6.12) -- (13.1,4.77);
+      \node[anchor=west,font=\scriptsize] at (13.45,4.77) {rcv pkt2, deliver pkt2, pkt3,};
+      \node[anchor=west,font=\scriptsize] at (13.45,3.97) {pkt4, pkt5, send ACK2};
+      \draw[ack] (13.1,4.67) -- (10.65,2.89);
+    \end{tikzpicture}%
+  }%
+}
+
+% Compact Slotted ALOHA attempt/outcome timeline (replaces the external PNG).
+\newcommand{\slottedalohadiagram}{%
+  \begin{tikzpicture}[x=.54cm,y=.42cm,baseline=(current bounding box.center),
+    every node/.style={font=\scriptsize}]
+    % Sender rows; coincident blocks in a slot collide.
+    \node[anchor=east] at (0,3) {node 1};
+    \node[anchor=east] at (0,2) {node 2};
+    \node[anchor=east] at (0,1) {node 3};
+    \foreach \x in {0,...,9} {\draw (\x,0) -- (\x,-.22);}
+    \draw[->] (0,0) -- (9.55,0) node[anchor=west] {time};
+    \node[draw,fill=yellow!65,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (.5,3) {1};
+    \node[draw,fill=yellow!65,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (2.5,3) {1};
+    \node[draw,fill=yellow!65,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (5.5,3) {1};
+    \node[draw,fill=yellow!65,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (7.5,3) {1};
+    \node[draw,fill=green!55,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (.5,2) {2};
+    \node[draw,fill=green!55,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (2.5,2) {2};
+    \node[draw,fill=green!55,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (3.5,2) {2};
+    \node[draw,fill=magenta!55,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (.5,1) {3};
+    \node[draw,fill=magenta!55,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (5.5,1) {3};
+    \node[draw,fill=magenta!55,minimum width=.38cm,minimum height=.28cm,inner sep=1pt] at (8.5,1) {3};
+    \node[text=red!80!black,font=\bfseries\scriptsize] at (.5,-.58) {C};
+    \node[text=blue!80!black,font=\bfseries\scriptsize] at (1.5,-.58) {E};
+    \node[text=red!80!black,font=\bfseries\scriptsize] at (2.5,-.58) {C};
+    \node[text=green!50!black,font=\bfseries\scriptsize] at (3.5,-.58) {S};
+    \node[text=blue!80!black,font=\bfseries\scriptsize] at (4.5,-.58) {E};
+    \node[text=red!80!black,font=\bfseries\scriptsize] at (5.5,-.58) {C};
+    \node[text=blue!80!black,font=\bfseries\scriptsize] at (6.5,-.58) {E};
+    \node[text=green!50!black,font=\bfseries\scriptsize] at (7.5,-.58) {S};
+    \node[text=green!50!black,font=\bfseries\scriptsize] at (8.5,-.58) {S};
+  \end{tikzpicture}%
+}
+
+% IPv4 split into a subnet prefix and host ID (replaces the external PNG).
+\newcommand{\ipaddressdiagram}{%
+  \begin{tikzpicture}[x=.17cm,y=.42cm,baseline=(current bounding box.center),
+    every node/.style={font=\scriptsize}]
+    \draw[<->] (0,1.35) -- (32,1.35) node[midway,fill=white,inner sep=1pt] {32 bits};
+    \fill[cyan!60!blue] (0,.35) rectangle (16,1.05);
+    \fill[violet!75] (16,.35) rectangle (32,1.05);
+    \node[text=white,font=\bfseries\tiny] at (8,.7) {network (subnet) prefix};
+    \node[text=white,font=\bfseries\tiny] at (24,.7) {host ID};
+    \draw[<->] (0,.02) -- (16,.02) node[midway,below=1pt] {$n$ bits};
+    \draw[<->] (16,.02) -- (32,.02) node[midway,below=1pt] {$32-n$ bits};
+  \end{tikzpicture}%
+}
+
+% Embedded Ethernet preamble / start-of-frame delimiter timing waveform.
+\newcommand{\preamblediagram}{%
+  \resizebox{.99\linewidth}{!}{%
+    \begin{tikzpicture}[x=.40cm,y=.40cm,>=Stealth, font=\scriptsize]
+      % The reference shows the last six bits of the preamble, then the SFD.
+      \draw[gray!70,line width=.65pt] (-.8,-.8) -- (23.5,-.8);
+      \foreach \x in {0,...,23} \draw[gray!70] (\x,-.65) -- (\x,-1.0);
+      \foreach \x in {6,14,22} \draw[gray!70] (\x,3.25) -- (\x,-.8);
+      \draw[gray!70,line width=1pt]
+      (0,1.3) -- (1,1.3) -- (1,0) -- (2,0) --
+      (2,1.3) -- (3,1.3) -- (3,0) -- (4,0) --
+      (4,1.3) -- (5,1.3) -- (5,0) -- (6,0) --
+      (6,1.3) -- (7,1.3) -- (7,0) -- (8,0) --
+      (8,1.3) -- (9,1.3) -- (9,0) -- (10,0) --
+      (10,1.3) -- (11,1.3) -- (11,0) -- (12,0) --
+      (12,1.3) -- (15,1.3) -- (15,0) -- (23.5,0);
+      % Place each digit on its own signal level, with white behind it.
+      \foreach \x/\v/\y in {1.5/0/0,2.5/1/1.3,3.5/0/0,4.5/1/1.3,5.5/0/0,6.5/1/1.3,7.5/0/0,8.5/1/1.3,9.5/0/0,10.5/1/1.3,11.5/0/0,12.5/1/1.3,13.5/1/1.3,14.5/1/1.3,15.5/0/0,16.5/0/0,17.5/0/0,18.5/0/0,19.5/0/0,20.5/0/0,21.5/0/0} {
+        \node[fill=white,inner sep=.5pt] at (\x,\y) {\v};
+      }
+      \draw[<->] (0,3.0) -- node[fill=white,inner sep=2pt] {Preamble Octet} (6,3.0);
+      \draw[<->] (6,3.0) -- node[fill=white,inner sep=2pt,align=center]
+      {Ethernet\\Start-Of-Frame\\Delimiter} (14,3.0);
+      \draw[<->] (14,3.0) -- node[fill=white,inner sep=2pt,align=center]
+      {First Octet following\\Start-Of-Frame} (22,3.0);
+      \node[anchor=east] at (13.3,4.85) {Message Timestamp Point};
+      \draw[->] (13.35,4.85) -- (14,4.85);
+      \draw[gray!70] (14,5.25) -- (14,2.0);
+      \node[fill=white,align=center,inner sep=1pt] at (1.5,-.85) {bit\\time};
+      \draw[red,line width=.65pt] (-.95,-.52) rectangle (6,2.05);
+      \draw[red,<->,line width=1.4pt] (8,-1.55) -- (9,-1.55);
+      \draw[red,->,line width=1.4pt] (18,-1.55) -- (15,-1.55);
+      \draw[red,->,line width=1.4pt] (20,-1.55) -- (23.5,-1.55);
+      \node[red,font=\bfseries\large] at (19,-1.55) {$\cdots$};
+      \node[red,font=\large] at (19,-2.25) {19 or 20?};
+    \end{tikzpicture}%
+  }%
+}
+
+\begin{document}
+\footnotesize % base font size for body text; tune to 8pt/9pt/tiny as needed
+
+% ============================================================
+% PAGE 1 — 4 columns
+% ============================================================
+\begin{multicols}{4}
+  \begin{center}
+    {\normalsize\bfseries CS2105 Cheatsheet}\\[2pt]
+    \rule{\linewidth}{0.6pt}
+  \end{center}
+  \vspace{-1.5em}
+
+  \subsection{Layers.}
+  \begin{compactfigure}
+    \resizebox{.97\linewidth}{!}{%
+      \begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize,
+        cell/.style={draw=white,line width=1pt,minimum height=.55cm,inner sep=1pt,align=center}]
+        \foreach \x/\w/\label in {0/.45/\#, .45/1.45/Layer name, 1.9/1.55/Protocol, 3.45/1.35/{Data unit}, 4.8/1.35/Addressing} {
+          \node[cell,fill=gray!55,minimum width=\w cm,anchor=south west] at (\x,2.75) {\label};
+        }
+        \foreach \y/\num/\layer/\shade/\proto/\pdu/\addr in {
+          2.2/5/Application/violet!45/{\shortstack{HTTP, SMTP\\DNS, DHCP}}/{Message}/{n/a},
+          1.65/4/Transport/cyan!45/{TCP, UDP}/{Segment}/{Port},
+          1.1/3/Network/green!45/{IP}/{Datagram}/{IP address},
+          .55/2/Data Link/yellow!65/{\shortstack{Ethernet, Wi-Fi\\ARP}}/{Frame}/{MAC address},
+        0/1/Physical/orange!45/{10BASE-T, 802.11}/{Bits}/{n/a}} {
+          \node[cell,fill=gray!25,minimum width=.45cm,anchor=south west] at (0,\y) {\num};
+          \node[cell,fill=\shade,minimum width=1.45cm,anchor=south west] at (.45,\y) {\layer};
+          \node[cell,fill=gray!25,minimum width=1.55cm,anchor=south west,font=\tiny] at (1.9,\y) {\proto};
+          \node[cell,fill=gray!25,minimum width=1.35cm,anchor=south west] at (3.45,\y) {\pdu};
+          \node[cell,fill=gray!25,minimum width=1.35cm,anchor=south west] at (4.8,\y) {\addr};
+        }
+      \end{tikzpicture}%
+    }
+  \end{compactfigure}
+
+  \begin{compactfigure}
+    \resizebox{.97\linewidth}{!}{%
+      \begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize,>=Stealth]
+        % Boxes show the layers processed by each device.
+        \foreach \x/\name in {0/Host,5.7/Host} {
+          \node[font=\bfseries\scriptsize] at (\x+.65,3.55) {\name};
+          \foreach \i/\label in {0/Physical,1/Link,2/Network,3/Transport,4/Application} {
+            \draw (\x,\i*.48) rectangle ++(1.3,.48);
+            \node at (\x+.65,\i*.48+.24) {\label};
+          }
+        }
+        \node[font=\bfseries\scriptsize] at (2.55,2.05) {Switch};
+        \foreach \i/\label in {0/Physical,1/Link} {
+          \draw (1.9,\i*.48) rectangle ++(1.3,.48);
+          \node at (2.55,\i*.48+.24) {\label};
+        }
+        \node[font=\bfseries\scriptsize] at (4.45,2.55) {Router};
+        \foreach \i/\label in {0/Physical,1/Link,2/Network} {
+          \draw (3.8,\i*.48) rectangle ++(1.3,.48);
+          \node at (4.45,\i*.48+.24) {\label};
+        }
+        \draw[fill=gray!20] (.47,2.67) rectangle (.83,3.02);
+        \draw (.65,2.67) -- (.65,2.52) (.45,2.52) -- (.85,2.52);
+        \draw[fill=gray!20] (6.17,2.67) rectangle (6.53,3.02);
+        \draw (6.35,2.67) -- (6.35,2.52) (6.15,2.52) -- (6.55,2.52);
+        \draw[fill=gray!20] (2.28,1.25) rectangle (2.82,1.54);
+        \draw (2.32,1.3) -- (2.78,1.49) (2.32,1.49) -- (2.78,1.3);
+        \draw[fill=gray!20] (4.45,1.9) ellipse (.3 and .16);
+        \draw (4.25,1.84) -- (4.65,1.96) (4.25,1.96) -- (4.65,1.84);
+        \draw (.83,2.85) -- (2.28,1.4) (2.82,1.4) -- (4.15,1.9) (4.75,1.9) -- (6.17,2.85);
+        \draw[cyan!65!blue,line width=1.4pt,rounded corners=3pt]
+        (1.12,2.18) -- (1.12,.24) -- (2.05,.24) -- (2.05,.72) --
+        (3.05,.72) -- (3.05,.24) -- (3.95,.24) -- (3.95,1.2) --
+        (4.95,1.2) -- (4.95,.24) -- (5.88,.24) -- (5.88,2.18);
+      \end{tikzpicture}%
+    }
+  \end{compactfigure}
+
+  \section*{Introduction}
+  \textbf{Edge:} hosts running applications, connected via access networks. \textbf{Core:} routers and links forwarding packets between edge networks.
+
+  \textbf{Switching}
+  \begin{itemize}
+    \item \textbf{Circuit switching:} A dedicated physical path (circuit) is
+      established between two nodes for the duration of the communication
+      session.
+    \item \textbf{Packet switching:} Data is divided into small units called
+      packets.
+      \begin{itemize}
+        \item \textbf{Store-and-forward:} A switch must receive the entire
+          packet from an incoming link before transmitting its first bit on an
+          outgoing link.
+      \end{itemize}
+  \end{itemize}
+
+  \textbf{Packet Loss: } Queue (aka buffer) of router has finite capacity. Packet arriving to full queue dropped
+
+  \begin{itemize}
+    \item \textit{Processing Delay: } Check bit errors, determine output link
+    \item \textit{Queuing Delay: } Time waited in queue.
+    \item \textit{Transmission Delay: } $\tfrac{\text{Packet length } L}{\text{Link bandwidth } R}$
+    \item \textit{Propagation Delay: } $\tfrac{\text{Length of Physical link } d}{\text{Propagation speed in medium } s}$
+  \end{itemize}
+
+  \begin{compactfigure}
+    \includegraphics[width=0.75\linewidth]{application/delay-type.png}
+  \end{compactfigure}
+  {\setlength{\fboxsep}{1pt}\colorbox{black!10}{\textit{End-to-end delay:}}} time taken for a packet to travel from source to destination.
+
+  {\setlength{\fboxsep}{1pt}\colorbox{black!10}{\textit{Bandwidth / link rate ($R$):}}} maximum rate a link can carry, in bit/s.
+
+  {\setlength{\fboxsep}{1pt}\colorbox{black!10}{\textit{Throughput ($T$):}}} actual rate of successfully delivered bits, in bit/s; end-to-end throughput is limited by the bottleneck link: $T \leq \min_i R_i$.
+
+  {\setlength{\fboxsep}{1pt}\colorbox{black!10}{\textit{Utilisation ($U$):}}} fraction of a link's bandwidth used: $U=T/R$ (multiply by $100$ for percentage).
+
+  \section*{Layer 1 - Application Layer}
+  \sectionrule
+
+  \subsection{Network Architecture}
+  \textbf{Client-Server Architecture}
+  \textit{Server:} Waits for incoming requests, and provides requested service to client. Data centers for scaling
+  \textit{Client:} Initiates contact with server (`speaks first'), typically requests service from server. For Web, client is usually implemented in browser
+
+  \textbf{P2P Architecture}
+  No always-on server. Arbitrary end systems directly communicate. Peers request from and provide service to from other peers. Self scalability – new peers bring new service capacity, as well as new service demands. Drawback: peers are intermittently connected and change IP addresses (complex management).
+
+  \subsection{Web/HTTP}
+  \textit{Protocols: } regulate communication activities in a network by defining the format and order of messages exchanged between hosts.
+  \textit{HTTP: }Hypertext transfer protocol. Web's app layer protocol. Client/server. Uses TCP.
+
+  \textit{RTT: }time for a packet to travel from client to server and back.
+  \begin{enumerate}
+    \item \textbf{Non-persistent HTTP} at most one object sent over a TCP connection (closed otherwise). Downloading multiple objects requires multiple connections. E.g. \texttt{http 1.0} (methods: \texttt{GET}, \texttt{POST}, \texttt{HEAD})
+      \begin{itemize}
+        \item Response Time: $2 \times RTT+ \text{file transmission time}$
+      \end{itemize}
+    \item \textbf{Persistent HTTP} server leaves connection open; multiple objects can be sent over single TCP connection. E.g. \texttt{http 1.1} (methods: same as 1.0, \texttt{PUT}, \texttt{DELETE})
+  \end{enumerate}
+
+  \begin{verbatim}
+  HTTP/1.1 200 OK\r\n        % status line
+  Date: Wed, 23 Jan 2019 13:11:15 GMT\r\n
+  Content-Length: 606\r\n  % header lines
+  Content-Type: text/html\r\n
+  \r\n  % blank to separate headers and data
+  <html>
+  ...data, e.g. requested HTML file...
+  </html>
+  \end{verbatim}
+
+  \textbf{Cookies: } http messages carry `state'. cookie header field of HTTP request / response messages. The cookie file is kept on user’s host, managed by user’s browser from backend
+
+  \subsection{Domain Name System (DNS)}
+  Translates hostname into IP address. Mapping is stored as resource records. Format: \texttt{<name, value, type, ttl>}. Stored in distributed databases in hierarchy of servers.
+  \begin{compactfigure}
+    \includegraphics[width=0.75\linewidth]{application/hierarchy.png}
+  \end{compactfigure}
+  Servers
+  \begin{enumerate}
+    \item \textit{Local} Each ISP (e.g. residential, school) has one local DNS server. Query is sent to local DNS server, acts as proxy and forwards to hierarchy if not found. Recursive.
+    \item \textit{Root: } directs a query to the appropriate TLD server.
+    \item \textit{Top-level domain (TLD): } \texttt{.com, .org. .edu, .sg}
+    \item \textit{Authoritative: } Organization’s own DNS server
+  \end{enumerate}
+  Local DNS resolution - \textit{recursive} (receiving server finds mapping). Else - \textit{iterative} (if mapping not found, return IP address of next DNS).
+
+  \textbf{DNS Caching: } Cache mapping in local DNS once learnt. Expire after TTL. Runs over UDP.
+
+  \subsection{Dynamic Host Configuration Protocol (DHCP)}
+  Application-layer protocol that leases IP configuration (e.g. IP address, subnet mask, default gateway, DNS server) when a host joins a network. Addresses can be reused after leases end. Uses UDP: client port 68, server port 67.
+
+  \textbf{DORA:} host broadcasts \textit{Discover} $\rightarrow$ server sends \textit{Offer} $\rightarrow$ host sends \textit{Request} $\rightarrow$ server sends \textit{ACK}.
+
+  \subsection{Socket Programming}
+  \textit{Process: }program running within a host. Identified by \texttt{(IP address, port number)} (port: 16-bit). IANA coordinates assignment of port no.
+
+  Within same host: inter-process communication (defined by OS). Different hosts: exchange messages (by protocols)
+
+  \textbf{Socket: } software interface between app processes and transport layer protocols. TCP (\texttt{socket(AF\_INET, SOCK\_STREAM)) or UDP (socket(AF\_INET, SOCK\_STREAM)}).
+
+  \textbf{UDP Socket Programming}
+  \begin{itemize}
+    \item Sender attaches dest. IP address and port no. to each packet.
+    \item Receiver extracts sender IP address and port no. from received packet.
+  \end{itemize}
+
+  \textbf{TCP Socket Programming}
+  \begin{itemize}
+    \item Client establishes a TCP connection.
+    \item Server creates a new connection socket for each client; can communicate with multiple clients separately.
+    \item Server's welcome socket listens on a fixed port, e.g.\ port $80$.
+  \end{itemize}
+
+  \section*{Layer 2 - Transport Layer}
+  \sectionrule
+  Resides in end hosts and provides process-to-process calculation.
+
+  \subsection{User Datagram Protocol (UDP)}
+  \begin{itemize}
+    \item Multiplexing at sender: UDP gathers data from processes, forms packets and passes them to IP
+    \item De-multiplexing at receiver: UDP receives packets from lower layer and dispatches them to correct processes.
+    \item Checksum - receiver calculates if computed checksum = checksum field value
+  \end{itemize}
+
+  \vspace{-0.8em}
+  \udpdiagram
+  Unreliable. Used by media streaming apps which are loss tolerant and rate sensitive
+
+  Checksum calculation:
+  \begin{compactfigure}
+    \includegraphics[width=0.75\linewidth]{transport/checksum.png}
+  \end{compactfigure}
+
+  \subsection{Reliable Data Transfer (RDT)}
+Network layer has unreliable communication. Needs a reliable transport layer protocol that 1) guarantee delivery and correctness, and 2) deliver packets in the same order they are sent.
+
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{0.9}
+
+\resizebox{\columnwidth}{!}{%
+  \begin{tabular}{lccccc}
+    \hline
+    \textbf{RDT} &
+    \textbf{Checksum} &
+    \textbf{ACK} &
+    \textbf{NAK} &
+    \textbf{Seq. no.} &
+    \textbf{Timer} \\
+    \hline
+    \texttt{1.0} & \texttimes & \texttimes & \texttimes & \texttimes & \texttimes \\
+    \texttt{2.0} & \checkmark & \checkmark & \checkmark & \texttimes & \texttimes \\
+    \texttt{2.1} & \checkmark & \checkmark & \checkmark & \checkmark & \texttimes \\
+    \texttt{2.2} & \checkmark & \checkmark & \texttimes & \checkmark & \texttimes \\
+    \texttt{3.0} & \checkmark & \checkmark & \texttimes & \checkmark & \checkmark \\
+    \hline
+  \end{tabular}%
+}
+\end{center}
+
+\begin{itemize}
+\item \texttt{rdt1.0}: assumes reliable channel. no error.
+\item \texttt{rdt2.0}: handles bit errors; corrupted ACKs/NAKs cannot be recovered.
+\item \texttt{rdt2.1}: use sequence numbers to discard duplicates.
+\item \texttt{rdt2.2}: no NAKs; send prev ACK. Duplicate indicates error.
+\item \texttt{rdt3.0}: handles packet loss with timer (if packet is delayed). Retransmit when timeout.
+\end{itemize}
+
+\textbf{rdt 3.0 Stop and Wait} $U_{\mathrm{s}}=\frac{L/R}{RTT+L/R}$
+
+\textit{Low utilisation; ignore ACK transmission and processing time.}
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{transport/stop-wait.png}
+\end{compactfigure}
+
+\subsection{Pipelined Protocols}
+\textbf{Go Back N} uses cumulative ACK - `ACK m' means all packets up to m are received. Receiver only ACKs packets arriving in order. Sender uses sliding window to keep track of unACK-ed packet, and timer for oldest unACK-ed.
+\begin{compactfigure}
+\gobackndiagram
+\end{compactfigure}
+
+\textbf{Selective Repeat} Receiver individually acknowledges all correctly received packets. Buffer out-of-order packets. Sender maintains timer for each unACKed packet. Retransmit only that packet upon timeout.
+
+\begin{compactfigure}
+\selectiverepeatdiagram
+\end{compactfigure}
+
+\subsection{Transmission Control Protocol (TCP)}
+Connection: \texttt{<srcIPAddr, srcPort, destIPAddr, destPort>}
+TCP send and receive buffers, created after handshaking at any side. Each TCP segment can carry Maximum Segment Size (MSS) in app-layer data.
+
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{transport/tcp-struct.png}
+\end{compactfigure}
+\textit{Seq. no.: } first byte of data in a segment. \textit{ACK no.: } Seq \# of the next byte of data expected by receiver.
+
+TCP (and also UDP) is a full duplex protocol - bi-directional data flow in the same TCP connection.
+
+\par\vspace{1pt}\noindent\begingroup\scriptsize
+\textbf{TCP Receiver Events}\par
+\begingroup\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{.95}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{.39\linewidth}|>{\raggedright\arraybackslash}p{.52\linewidth}|}
+\hline
+\textbf{Segment received} & \textbf{Receiver action} \\
+\hline
+In order; all earlier data ACKed & Delay ACK up to 500 ms; ACK if no next segment arrives. \\
+\hline
+In order; earlier ACK pending & Send cumulative ACK immediately. \\
+\hline
+Out of order; gap created & Buffer and immediately send duplicate ACK for next expected byte. \\
+\hline
+Partly or completely fills gap & Send cumulative ACK immediately. \\
+\hline
+\end{tabular}\par\endgroup
+\vspace{1pt}
+\textbf{Example} (1,000-byte segments; bytes 0--4,999 already ACKed):\par
+\begingroup\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{.95}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Arrival seq. & 5000 & 6000 & 9000 & 7000 & 8000 \\
+\hline
+Action / ACK & wait & 7000 & 7000 & 8000 & 10000 \\
+\hline
+\end{tabular}\par\endgroup
+\textit{Assumes the second segment arrives before the delayed ACK timer expires.}\par\endgroup
+
+\par\vspace{1pt}\noindent\begingroup\scriptsize
+\textbf{TCP Sender Events}\par
+\begingroup\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{.95}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{.39\linewidth}|>{\raggedright\arraybackslash}p{.52\linewidth}|}
+\hline
+\textbf{Event} & \textbf{Sender action} \\
+\hline
+Data received from app & Pass segment with \textit{nextSeqNum} to IP; start timer if not running; \textit{nextSeqNum} += \textit{length(data)}. \\
+\hline
+Timer timeout & Retransmit segment with smallest unACKed seq. no. (\textit{base}); restart timer; double timeout interval. \\
+\hline
+ACK received ($y > \text{\textit{base}}$) & Set \textit{base} $= y$; restart timer if unACKed segments remain; reset duplicate ACK counter. \\
+\hline
+Duplicate ACK ($y \le \text{\textit{base}}$) & Duplicate ACK count += 1; if count = 3, perform \textbf{fast retransmit} of segment $y$. \\
+\hline
+\end{tabular}\par\endgroup
+\vspace{1pt}
+\endgroup
+
+TCP feedback allows at most one retransmission of old tickets, but multiple retransmission of new ones (e.g. when a delayed ACK is received and window moves by multiple MSS).
+
+\textbf{TCP Timeout Interval} TCP continuously updates timeout interval based on estimated RTT.
+
+$\text{Est.RTT} = (1-\alpha)\text{Est.RTT} +\alpha\text{SampleRTT}$,\\
+$\text{DevRTT} = (1-\beta)\text{DevRTT} +\beta\left|\text{SampleRTT} \text{Est.RTT}\right|$,\\
+$\text{TimeoutInterval} = \text{Est.RTT}+4\text{DevRTT}$
+
+\textbf{TCP Handshake}
+\textit{Establishing Connection}
+
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{transport/handshake-open.png}\\[0.5em]
+\includegraphics[width=0.75\linewidth]{transport/handshake-close.png}
+\end{compactfigure}
+
+\section*{Layer 3 - Network Layer}
+\sectionrule
+The network layer delivers packets to receiving hosts
+
+\subsection{IP Address} Used to identify a host (or a router).
+A host gets an IP addr. either by:
+\begin{enumerate}
+\item manually configured by system administrator, or
+\item automatically leased by a DHCP server.
+\end{enumerate}
+
+\begin{compactfigure}
+\ipaddressdiagram
+\end{compactfigure}
+For CIDR \texttt{a.b.c.d/$n$}: host bits $=32-n$;
+\textbf{total addresses} $=2^{32-n}$. Normally usable host addresses
+$=2^{32-n}-2$: the address with all host bits 0 is the \emph{network ID},
+and the one with all host bits 1 is the \emph{directed broadcast}, so neither
+is assigned to a host. (/31 point-to-point links and /32 host routes are
+exceptions.)
+
+\par\textbf{Special IP Addresses.}\par
+\begingroup\scriptsize\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{1.02}
+\begin{tabular}{@{}>{\ttfamily}p{.36\linewidth}p{.58\linewidth}@{}}
+\toprule
+\normalfont\textbf{IPv4 address / range} & \textbf{Use} \\
+\midrule
+0.0.0.0 & Unspecified address; e.g. source before host obtains an address. \\
+127.0.0.0/8 & Loopback within the host; typically \texttt{127.0.0.1}. \\
+10.0.0.0/8 & \multirow{3}{*}{\parbox{.55\linewidth}{Private addresses; not routed on the public Internet.}} \\
+172.16.0.0/12 & \\
+192.168.0.0/16 & \\
+255.255.255.255 & Limited broadcast on the local network; not forwarded by routers. \\
+\bottomrule
+\end{tabular}\par\endgroup
+
+\textbf{IP Fragmentation.} A fragment has its own IP header, a shared
+Identification value, a Fragment Offset (in 8-byte units), and the More
+Fragments flag. When a TCP segment is fragmented, only the first fragment
+contains the TCP header; later fragments carry payload. Reassembly is at the
+final destination.
+
+\textbf{Subnet.} A network formed by a group of “directly” interconnected hosts. Hosts in the same subnet have the same network prefix of IP address. Can reach each other without router.
+
+\textbf{Classless Inter-domain Routing (CIDR).} Internet's IP Address assigning strategy.
+Address format: \texttt{a.b.c.d/x}, where \texttt{x} is the number of bits in subnet prefix.
+
+Subnet mask determines which subnet an IP address belongs to. Set all subnet bits t 1 and host id bits to 0.
+
+\textbf{Hierarchical addressing} uses subnet masks to structure addresses into blocks. Pros are upstream routers do not need to know every single individual host or minor subnet.
+\textbf{Longest prefix match} compares dest. IP address against every entry in forwarding table and returns one with the longest matching subset mask.
+
+An ISP get a block of addresses from ICANN: Internet Corporation for Assigned Names and Numbers. Allocates addresses, manages DNS, and assigns domain names.
+
+\subsection{Routing Algorithms}
+\textit{Autonomous System: }a collection of networks under the control of one single admin entity, e.g ISP or large company.
+\textit{Intra-AS routing.} Find a good path between two routers within an AS. Single admin - no policy decisions needed and routing focuses on performance.
+
+\textit{Bellman-Ford: }$d_x(y) = \min_v{\{c(x, v)+ d_v(y)\}}.$
+$c(x, y)$: cost of link between routers x and y, infinity if x and y are not direct neighbours. $d_x(y)$: cost of least-cost path from x to y from x’s view.
+
+\textbf{Distance Vector Algorithms}
+Every router, x, y, z, sends its distance vectors to its directly connected neighbors.
+When x finds out that y is advertising a path to z that is cheaper than x currently knows, x will update its distance vector to z accordingly. x will note down that all packets for z should be sent to y. Update forwarding table of x
+After every router has exchanged several rounds of updates with its direct neighbors, all routers will know the least-cost paths to all the other routers.
+
+\textbf{Routing Information Protocol (RIP)} implements the DV algorithm. Uses hop count as the cost metric (i.e., insensitive to network congestion).
+Exchange routing table every 30 seconds over UDP port 520.
+“Self-repair”: if no update from a neighbour router for 3 minutes, assume neighbour has failed
+
+\textbf{IPv4 Datagram.}
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{network/ipv4.png}
+\end{compactfigure}
+
+\subsection{Network Address Translation (NAT)}
+Maps one IP addresses space into another \texttt{<source IP, source port, dest IP, dest port>}. One table entry is $4 + 2 + 4 + 2 =12 \text{ bytes}$
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{network/nat.png}
+\end{compactfigure}
+\begin{itemize}
+\item Replace (source IP address, port \#) of every outgoing datagram to (NAT IP address, new port \#).
+\item Remember (in NAT table) mapping from (source IP address, port \#) to (NAT IP address, new port \#).
+\item Replace (NAT IP address, new port \#) in dest fields of every incoming datagram with corresponding (source IP address, port \#) stored in NAT table
+\end{itemize}
+
+\textbf{Benefits.} Only need one public IP for the NAT router. All hosts use private IP addresses so addresses of hosts can be changed in local network without notifying outside.
+Can change ISP without changing addresses of hosts
+in local network. Hosts inside local network are not explicitly addressable and visible by outside world (security).
+
+MTU (Max Transfer Unit) the maximum amount of data a link-level frame can carry.
+
+\subsection{Internet Control Message Protocol}
+
+Used by hosts \& routers to communicate network-level
+information. E.g. error reporting: unreachable host / network / port / protocol and echo request/reply (used by \texttt{ping})
+
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{network/icmp-type.png}
+\end{compactfigure}
+
+\section*{Layer 4 - Link Layer}
+\sectionrule
+Transfers IP datagrams between adjacent nodes (hosts or routers) over one link, encapsulated in link-layer frames.
+
+\textbf{Communication channel: } the transmission medium of the data signals. E.g. copper wire, optical fiber, terrestrial radio, Satellite. \\
+\textbf{Nodes: } Devices exchanging data. e.g. hosts, routers
+\textbf{Adjacent: } Single hop connects the two nodes
+\textbf{Frame: } Layer-2 packet
+
+Implemented in adapter eg NIC (Network Interface Card)
+
+Link Layer Services.
+\begin{enumerate}
+\item \textbf{Framing: } encapsulate data into a frame, add header and trailer
+\item \textbf{Link Access Control: } When multiple nodes share a single link, coordinate which nodes can send frames at each point of time
+\item \textbf{Error detection}
+\item \textbf{Error correction}
+\item \textbf{Reliable delivery: } often used on error-prone delivery like wireless link.
+\end{enumerate}
+
+\subsection{Multiple Access Links and Protocols}
+
+\textbf{Types of Network Link}
+\begin{itemize}
+\item \textbf{Type 1: point-to-point link} A sender and a receiver connected by a dedicated link (eg host to router). Use protocols Point-to-Point Protocol (PPP), Serial Line Internet Protocol (SLIP). No need multiple access.
+\item \textbf{Type 2: broadcast link } Multiple nodes connected to a shared broadcast channel. When a node transmits a frame, the channel broadcasts the frame and every other node receives a copy. If two or more nodes transmit simultaneously, it leads to a \textbf{collision}
+\end{itemize}
+
+\textbf{Given}: Broadcast channel of rate R bps
+Desired Properties:
+\begin{enumerate}
+\item Collision Free
+\item Efficient: when only one node wants to transmit, it can send at rate R.
+\item Fairness: when M nodes want to transmit, each can send at same average rate R/M (approx.)
+\item fully decentralized, i.e. no special node to coordinate transmissions
+\end{enumerate}
+
+coordination about channel sharing must use channel itself!: no out-of-band channel signaling
+
+\subsection{Random Access Protocols}
+Random access protocols specify how to detect collisions and how to recover from collisions
+
+\textbf{Slotted ALOHA}
+When node has data to send transmit at full channel data rate $R$, and no a priori coordination among nodes. Data sent in frames of size $L$ bits.
+\begin{itemize}
+\item Time divided into synchronized slots of duration \(L/R\).
+\item Nodes transmit at the start of the next slot when they have a frame.
+\item After a collision, retransmit in each subsequent slot with probability \(p\).
+\end{itemize}
+\begin{compactfigure}
+\slottedalohadiagram
+\end{compactfigure}
+
+\textbf{Unslotted ALOHA}
+No time slots, no synchronisation. When fresh frame:
+\begin{itemize}
+\item Transmits the entire frame immediately.
+\item If no collision: data transmission is a success.
+\item If collision: data transmission is a failure. Wait for 1 frame transmission time, retransmit in each subsequent slot with probability \(p\)
+\item Chance of collision increases.
+\end{itemize}
+
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{link/unslotted-aloha.png}
+\end{compactfigure}
+
+\textbf{Limitations of both ALOHAs: } node’s decision to transmit is independent of the activity of other nodes in broadcast channel, and node pays no attention to whether another node is transmitting
+
+\textbf{Carrier Sense Multiple Access}
+Listen before transmit. If channel idle, transmit, else defer transmission.
+Possible collision from propagation delay
+
+\textbf{Carrier Sense Multiple Access/Collision Detection}
+Same as above, but if collision detected, abort transmission and retransmit after random delay (backoff algorithm)
+
+Backoff Algorithm: after each collision, randomly select waiting time \(K\) before retransmitting. Range of possible values for \(K\) doubles after every collision, causing the retransmission probability to decrease as \(p = 1/2^m\). This binary exponential backoff adapts to network load: more collisions $\rightarrow$ heavier traffic, longer back-off interval.
+
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{link/csma.png}
+\end{compactfigure}
+
+\begin{center}
+\resizebox{\columnwidth}{!}{%
+  \begin{tabular}{lcccc}
+    \hline
+    \textbf{Protocol} & \textbf{Collision-Free} & \textbf{Efficiency} & \textbf{Fairness} & \textbf{Decentralized} \\
+    \hline
+    Slotted ALOHA
+    & No
+    & \(R\) one node; \(37\%\) many nodes
+    & Perfectly fair
+    & Yes \\
+
+    Pure ALOHA
+    & No
+    & \(R\) one node; \(18\%\) many nodes
+    & Perfectly fair
+    & Yes \\
+
+    CSMA / CSMA/CD
+    & No
+    & Yes
+    & Yes
+    & Yes \\
+    \hline
+  \end{tabular}%
+}
+\end{center}
+
+Minimum Frame Size: $2\max\left(d_{\mathrm{prop}}\right) \leq d_{\mathrm{trans}}$ so that sending nodes can detect collision.
+$d_{prop}$ d. prop. to diameter (maximum distance between any 2 nodes in the network)
+$d_{trans}$ d. prop. frame size
+
+\subsection{Taking Turns Protocols}
+\textbf{Polling}
+Master node polls each node in a round-robin fashion.
+\begin{itemize}
+\item Master informs node 1, it can transmit up to some $N_{max}$.
+\item After node 1 transmits, master node tells node 2 it (node 2) can transmit up to $N_{max}$
+\end{itemize}
+
+\textbf{Token Passing}
+Special frame, \textbf{token}, is passed from one node to
+next. When node receives token, hold onto the token only if some frames to transmit. Otherwise, forward token
+to next node. Cons: Token loss can disrupt the system, and a node failure can break the ring.
+
+\begin{center}
+\resizebox{\columnwidth}{!}{%
+  \begin{tabular}{lccc}
+    \hline
+    \textbf{Protocol} & \textbf{Collision-Free} & \textbf{Efficiency} & \textbf{Decentralized} \\
+    \hline
+    Polling
+    & Yes
+    & Higher; polling overhead
+    & No; master node as single point of failure \\
+
+    Token Passing
+    & Yes
+    & Higher; token-passing overhead
+    & Yes \\
+    \hline
+  \end{tabular}%
+}
+
+\vspace{2mm}
+\textbf{Fairness:} Both are perfectly fair.
+\end{center}
+
+\subsection{Channel Partitioning Protocols}
+\textbf{Time Division Multiple Access (TDMA)}
+\begin{enumerate}
+\item Channel access is divided into repeating rounds, or time frames.
+\item Assign each node a fixed-length time slot for transmitting one data frame.
+\item Unused nodes leave their slots idle (reduced efficiency).
+\item E.g., for six nodes, nodes 1, 3, and 4 transmit while slots 2, 5, and 6 remain idle.
+\end{enumerate}
+
+\textbf{Frequency Division Multiple Access (FDMA)}
+\begin{enumerate}
+\item Channel spectrum is divided into frequency bands.
+\item Each node is assigned a fixed frequency band.
+\item Unused transmission time in frequency bands go idle.
+\item E.g.: 6 nodes, 1, 3, 4 have frames, frequency bands 2, 5, 6 are idle.
+\end{enumerate}
+
+\begin{center}
+\scriptsize
+\resizebox{\columnwidth}{!}{%
+  \begin{tabular}{lcccc}
+    \hline
+    \textbf{Protocol} & \textbf{Collision-Free} & \textbf{Efficiency} & \textbf{Decentralized} \\
+    \hline
+    TDMA & Yes & Inefficient; idle slots; max. throughput \(R/N\)
+    & Yes \\
+
+    FDMA & Yes & Inefficient; unused frequencies; max. throughput \(R/N\)
+    & Yes \\
+    \hline
+  \end{tabular}%
+}
+\vspace{2mm}
+\textbf{Fairness:} Both are perfectly fair.
+\end{center}
+
+\subsection{Error Detection}
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{link/error-d.png}
+\end{compactfigure}
+
+\textbf{Parity Checking}
+Even Parity: sender simply includes one additional bit, chooses its value such that the total number of 1s in the
+$d + 1$ bits is even.
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{link/parity.png}
+\end{compactfigure}
+Errors clustered in bursts - unable to detect even number of bit changes.
+\textbf{Computing gradients}
+
+2D Parity
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{link/2d.png}
+\end{compactfigure}
+
+\textbf{Cyclic Redundancy Check (CRC)}
+\begin{compactfigure}
+\includegraphics[width=0.48\linewidth]{link/crc.png}
+\includegraphics[width=0.48\linewidth]{link/crc-div.png}
+\end{compactfigure}
+Sender sends $(D, R)$. Receiver knows $G$, divide $(D, R)$ by $G$. Error when non-zero remainder.
+Easy to implement on hardware, can detect all odd-number of single bit errors. CRC of $r$ bits can detect all burst errors of up to $r$ bits, and all burst errors of greater than $r$ bits with probability $1-0.5^r$
+
+\subsection{Local Area Network (LAN)}
+Computer network that interconnects computers within a geographical area such as office building or university campus.
+\textbf{Ethernet}: considered the dominant LAN tech. Unreliable: receiving NIC doesn’t send ACK or NAK
+to sending NIC. Uses CSMA/CD with exponential backoff.
+
+\textbf{Ethernet Frame Structure}
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{link/ethernet-addr.png}
+\end{compactfigure}
+\textbf{Source \& Dest. MAC Addr}
+If NIC receives a frame with matching destination MAC address, or with broadcast address, it passes data in the frame to network layer protocol. Otherwise, NIC discards frame.
+
+\textbf{Data}
+Max size: 1500 bytes (MTU). Min size: 46 bytes
+
+\textbf{Type \& CRC}
+Type identifies the enclosed upper-layer protocol (e.g. IP or ARP). CRC is
+checked by the receiver; a corrupted frame is dropped. Ethernet itself has
+no ACK/NAK, so any recovery is performed by a higher layer (e.g. TCP).
+
+\textbf{Preamble}
+7 bytes of pattern 10101010 (AAHex) + 1 byte of pattern 10101011 (ABHex) (i.e. `start of frame'). Used to synchronize receiver and sender clock rates. Used to tell receiver the "width" of a bit.
+\par\vspace{2pt}\noindent\preamblediagram\par\vspace{2pt}
+
+Interconnect the nodes to make a shared link:
+\begin{enumerate}
+\item \textbf{Bus} topology is a broadcast LAN. All transmitted frames received by all adapters connected to the bus (so all can collide). Slow, hard to troubleshoot.
+\item \textbf{Star / hub} (physical layer). When a bit arrives from one interface, hub re-creates the bit, boosts energy strength, and transmits the bit onto all other interfaces. Modular, but slow esp for large networks.
+\item \textbf{Star / switch} connect directly to nodes. Layer-2 device. Works on frames rather than individual bits. A bona-fide store-and-forward packet switch. No collisions
+\end{enumerate}
+\textbf{Hub vs. switch vs. router:} hub repeats bits to every port (one
+collision domain); switch forwards frames using MAC addresses; router routes
+IP datagrams between subnets and rebuilds the link-layer frame at each hop.
+
+\textbf{Switch}
+Transparent (hosts are unaware of switches) and plug-and-play (self-learning).
+A-to-A’ and B-to-B’ can transmit simultaneously, without collisions, but cannot send from A-to-A’ and B-to-A’ simultaneously.
+Switch table format: \texttt{< MAC address of host, interface to reach host, TTL >}.
+
+\textbf{Forwarding rule:} first learn/update \texttt{< source MAC, incoming
+interface >}. Look up destination MAC: known on a different port $\rightarrow$
+forward only there; known on the incoming port $\rightarrow$ filter/drop;
+unknown (or broadcast) $\rightarrow$ flood all ports except the incoming one.
+
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{link/switch-eg.png}
+\end{compactfigure}
+
+\subsection{MAC (Media Access Control) Address}
+Every adapter (NIC) has a MAC address (aka physical or LAN address). Typically 48 bits, burned in NIC ROM. E.g. \texttt{5C-F9-DD-E8-E3-D2}.
+Broadcast address: \texttt{FF-FF-FF-FF-FF-FF}.
+First three bytes indicate vendor. Administered by IEEE.
+
+\subsection{IP vs. MAC Address}
+\begingroup
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}p{1.15cm}p{2.3cm}p{2.3cm}@{}}
+\toprule
+& \textbf{IP address} & \textbf{MAC address} \\
+\midrule
+\textbf{Layer / size} & Network (L3); IPv4 = 32 bits & Link (L2); normally 48 bits \\
+\textbf{Purpose} & Route datagram to final destination & Deliver frame to next hop on one link \\
+\textbf{Form} & Hierarchical: subnet prefix + host ID & Flat NIC/adapter identifier \\
+\textbf{Lifetime} & Logical; can be assigned dynamically & Usually hardware-associated; normally stable \\
+\bottomrule
+\end{tabular}
+\endgroup
+
+\textbf{At a router:} remove incoming frame, route its IP datagram, then build a new frame. End-host IP src/dst normally stay the same; MAC src/dst change at every routed hop.
+
+\subsection{Address Resolution Protocol (ARP)}
+Query mechanism to learn a MAC address given an IPv4 address \emph{on the
+same subnet}. Each IP node has an ARP table:
+\texttt{< IP address; MAC address; TTL >}. ARP is plug-and-play; stale
+mappings expire after the TTL.
+
+\textbf{Within Same Subnet}
+If A knows B’s MAC address from its ARP table, create a frame to B and send
+it. Only B processes it; other NICs ignore it. On a cache miss, A broadcasts
+an ARP query containing B's IP, with destination MAC
+\texttt{FF-FF-FF-FF-FF-FF}. All local nodes receive it, but only B unicasts
+its MAC reply; A caches the mapping, then sends the data frame. ARP broadcasts
+do not cross routers.
+
+\textbf{Sending to a Different Subnet} (host A $\rightarrow$ host B via gateway R)
+\begin{compactfigure}
+% Computer icon based on misc/computer.svg, drawn as vector paths for pdfLaTeX.
+\newcommand{\lancomputer}{\tikz[baseline=-.15ex,x=.045cm,y=.045cm]{%
+    \draw[line width=.6pt,rounded corners=.7pt] (2,3) rectangle (22,18);
+    \draw[line width=.5pt] (4,5) rectangle (20,16);
+\draw[line width=.7pt] (12,3) -- (12,1) (8,1) -- (16,1);}}
+\resizebox{.98\linewidth}{!}{%
+  \begin{tikzpicture}[>=Stealth, font=\scriptsize,
+      host/.style={align=center,inner sep=1pt},
+      lan/.style={draw,rounded corners=3pt,fill=cyan!18,minimum width=1.35cm,minimum height=1.15cm,align=center},
+    addr/.style={font=\tiny,align=center,inner sep=1pt}]
+    % Each router interface belongs to the LAN it connects to.
+    \node[host] (a) at (0,1.7) {\lancomputer\\Host A};
+    \node[host] (a2) at (0,-.5) {\lancomputer\\Host};
+    \node[lan] (la) at (2.7,.6) {LAN A};
+    \node[draw,ellipse,fill=gray!20,minimum width=1.4cm,minimum height=.65cm] (r) at (5.4,.6) {Router R};
+    \node[lan] (lb) at (8.1,.6) {LAN B};
+    \node[host] (b) at (10.8,1.7) {\lancomputer\\Host B};
+    \node[host] (b2) at (10.8,-.5) {\lancomputer\\Host};
+    \draw (a.east) -- (la.west |- a.east) -- (la.west);
+    \draw (a2.east) -- (la.west |- a2.east) -- (la.west);
+    \draw (la.east) -- (r.west);
+    \draw (r.east) -- (lb.west);
+    \draw (lb.east) -- (lb.east |- b.west) -- (b.west);
+    \draw (lb.east) -- (lb.east |- b2.west) -- (b2.west);
+    \node[addr,above=1pt of a] {IP 130.26.184.13\\MAC 74-29-9C-E8-FF-55};
+    \node[addr,below=1pt of a2] {IP 130.26.184.55\\MAC CC-49-DE-D0-AB-7D};
+    \node[addr,above=1pt of b] {IP 130.168.0.10\\MAC 49-BD-D2-C7-56-2A};
+    \node[addr,below=1pt of b2] {IP 130.168.0.7\\MAC 88-B2-2F-54-1A-0F};
+    \node[addr,below=2pt of r,anchor=north] {R's interfaces:\\
+      LAN A: 130.26.0.1 / E6-E9-00-17-BB-4B\\
+    LAN B: 130.168.0.1 / 1A-23-F9-CD-06-9B};
+  \end{tikzpicture}%
+}
+\end{compactfigure}
+\begin{enumerate}
+\item \textbf{Choose next hop:} A sees B is off-subnet and chooses its default gateway R.
+\item \textbf{Find gateway MAC:} A checks its ARP cache; on a miss, it broadcasts an ARP query for R's local-interface IP. R replies with its MAC.
+\item \textbf{Send to R:} A sends a frame with MAC A $\rightarrow$ R, carrying a datagram with IP A $\rightarrow$ B.
+\item \textbf{R forwards:} R removes the frame, routes using B's IP, and resolves the next-hop MAC on its outgoing link (B's MAC only if B is directly connected).
+\item \textbf{Build a new frame:} R sends the datagram with source MAC = R's outgoing interface and destination MAC = the next hop. Later routers repeat this.
+\end{enumerate}
+\textbf{Remember:} IP source/destination normally stay A/B end-to-end; MAC source/destination change at each routed hop. The IP TTL decreases at routers.
+
+\subsection{Network Security}
+\textit{Confidentiality} only sender, intended
+receiver should `understand' message contents (no eavesdropping).
+\textit{Message integrity} sender, receiver want to ensure message not altered (in transit, or afterwards) without detection (no modification)
+\textit{Authentication} sender, receiver want to
+confirm identity of each other (no impersonation or repudiation)
+\textit{Nonrepudiation} Proving that a transaction happened between 2 entities
+
+\subsection{Cryptography}
+
+\begin{itemize}
+\item Symmetric Key Cryptography: $K_A = K_B$. E.g. Caesar cipher, monoalphabetic cipher -> can break with statistical analysis (known 2/3 letter combos)
+\item Asymmetric Key Cryptography: $K_A \neq K_B$
+\end{itemize}
+
+\subsection{Symmetric Key Crypto}
+Drawback: requires sender, receiver know to shared secret key. How to agree on this key?
+
+\textit{Polyalphabetic encryption}
+Use $n$ substitution ciphers.
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{security/poly.png}
+\end{compactfigure}
+Encryption key: $n$ substitution ciphers, and cycling pattern.
+
+\textit{Block ciphers}
+The message to be encrypted is processed in blocks of $K$ bits. Standards
+\begin{enumerate}
+\item DES: Data Encryption Standard (56-bit symmetric key, 64-bit block). 3DES more secure ver.
+\item AES: Advanced Encryption Standard (128 bit blocks; 128, 192, or 256 bit keys).
+\end{enumerate}
+
+\textit{Public Key Cryptography}
+Given public key $K_B^+$, it should be computationally infeasible to derive private key $K_B^-$.
+
+\textbf{Encryption vs. signature} (Alice sends to Bob):
+\begingroup\scriptsize\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{1.02}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{.20\linewidth}>{\raggedright\arraybackslash}p{.36\linewidth}>{\raggedright\arraybackslash}p{.39\linewidth}@{}}
+\toprule
+& \textbf{Key operation} & \textbf{Security property} \\
+\midrule
+Encryption & Alice encrypts with Bob's public key; Bob decrypts with his private key. & Confidentiality; does not by itself authenticate Alice. \\
+Signature & Alice signs with her private key; Bob verifies using Alice's public key. & Authenticity and integrity; supports non-repudiation, but not confidentiality. \\
+\bottomrule
+\end{tabular}\par\endgroup
+For both, sign the message and encrypt it for Bob. A signature is not general-purpose private-key encryption; use a signature scheme and verify the public-key identity.
+
+\subsection*{RSA}
+\textbf{Key generation}
+\begin{enumerate}
+\item Choose two large prime numbers \(p\) and \(q\).
+\item Compute $n = pq, \qquad \varphi(n) = (p-1)(q-1)$.
+\item Choose \(e\), where \(1 < e < \varphi(n)\), such that $\gcd(e,\varphi(n)) = 1$. \(e\) and \(\varphi(n)\) are relatively prime.
+\item Choose \(d\) such that $ed \equiv 1 \pmod{\varphi(n)}$.
+  Equivalently, \(ed-1\) is exactly divisible by \(\varphi(n)\).
+\item $\text{Public key } K_B^+ = (n,e), \text{Private key } K_B^- = (n,d)$.
+\end{enumerate}
+
+\textbf{Encryption and decryption}
+Given public key \((n,e)\) and private key \((n,d)\):
+
+\begin{itemize}
+\item To encrypt \(m<n\), compute $c \equiv m^e \pmod n$.
+\item To decrypt ciphertext \(c\), compute $m \equiv c^d \pmod n$.
+\end{itemize}
+
+This is correct since $c^d \equiv (m^e)^d = m^{ed} \equiv m \pmod n$.
+
+\textbf{Session keys}
+To transfer a large file (M) from Alice to Bob
+\begin{enumerate}
+\item Alice generate a random session Key $K_S$
+\item Encrypt and send key to Bob, using public key $K_B^+$
+\item Bob extracts session key $K_B^-(K_B^+(K_S))$
+\item Alice send M using symmetric key encryption using $K_S$
+\end{enumerate}
+
+\subsection{Message Integrity}
+\textbf{Hash function:} A function $H(\cdot)$ that takes an input message $m$ and produces a fixed-size \emph{fingerprint}. Many-to-one because messages of arbitrary length are mapped to outputs of fixed length. Faster than encryption.
+
+\textbf{Cryptographic hash function:} Hash function where it is computationally infeasible to find two different messages $x \neq y$ such that $H(x) = H(y)$. Attacker cannot substitute one message for another while preserving its hash value. e.g. \texttt{md5sum}. 128 bits. Small change in input results in large change in hash output SHA.
+
+\textbf{Message Authentication Code} Sender \& Receiver share authentication key $s$. Send Send $(m, H(m + s))$.
+
+\textbf{Password Hashing} Passwords cannot be recovered only reset.
+
+\textbf{Hashing: Timestamping}
+\begin{itemize}
+\item Produces a proof of work without revealing the work itself.
+\item Submit hash of the work:
+  \begin{itemize}
+    \item The hash produces a timestamp representing the time of submission.
+    \item The work can later be shown to be unmodified by recomputing
+      and verifying its hash.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Digital Signatures}
+A signature must be \textbf{verifiable} using the signer's public key and \textbf{unforgeable} without their private key. \textbf{Non-repudiation:} the message and signature can serve as evidence of signing, assuming the private key was controlled by the signer.
+
+\textbf{Public Key Infrastructure (PKI)}
+Public key distribution.
+\textit{Certificate } digital document that contains identity and public key of owner, time window cert is valid, and signature of CA.
+\textit{A CA} issues and signs digital certificates to websites/entities, maintains directory of public keys, and has its own public/private key pair. A CA binds public key to particular entity, E, while E registers its public key with CA, first by providing proof of identity. CA then creates cert binding E to a public key and signs it.
+When Alice wants Bob’s public key, get Bob’s certificate (Bob or elsewhere) and apply CA’s public key to Bob’s certificate to get Bob’s public key
+
+\subsection{Access and Availability}
+Services must be accessible and available to users.
+
+\textbf{Firewall} isolates organization’s internal net from larger Internet, allowing some packets to pass, blocking others. Prevents Denial of Service (DoS) attacks and illegal modification and/or access of data.
+
+\textbf{Stateless Packet Filtering} Internal network connected to Internet via router firewall. Router filters packet-by-packet, decision to forward/drop packet based on source/dest IP address, TCP/UDP source and dest port numbers, ICMP message type, TCP SYN and ACK bits.
+
+\begin{center}
+\begingroup
+\renewcommand{\arraystretch}{1.02}
+\setlength{\tabcolsep}{2pt}
+\scriptsize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{.38\linewidth}|>{\raggedright\arraybackslash}p{.48\linewidth}|}
+  \hline
+  \multicolumn{1}{|c|}{\textbf{Policy}} &
+  \multicolumn{1}{c|}{\textbf{Drop rule}} \\
+  \hline
+  Block external HTTP access & Drop outgoing TCP to any IP, destination port 80. \\
+  \hline
+  Allow incoming TCP only to public Web server & Drop inbound TCP SYN except to \texttt{130.207.244.203}, port 80. \\
+  \hline
+  Limit Web-radio traffic & Drop incoming UDP except DNS and router broadcasts. \\
+  \hline
+  Prevent use in a Smurf DoS attack & Drop ICMP packets sent to a directed-broadcast address. \\
+  \hline
+  Prevent external traceroute & Drop outgoing ICMP ``TTL expired'' messages. \\
+  \hline
+\end{tabular}
+\endgroup
+\end{center}
+
+ACL is a table of rules to apply to packets.
+\begin{compactfigure}
+\includegraphics[width=0.75\linewidth]{security/acl.png}
+\end{compactfigure}
+
+Limitation: IP spoofing: router can’t know if data `really' comes from claimed source. Tradeoff: degree of communication with outside world limited.
+
+\section{Network commands}
+\begin{table*}[t]
+\small
+\begin{tabularx}{\textwidth}{@{}p{0.16\textwidth}
+                              p{0.28\textwidth}
+                              X@{}}
+\toprule
+\textbf{Command} & \textbf{Usage} & \textbf{Purpose and layer} \\
+\midrule
+
+\texttt{ping}
+& \texttt{ping google.com}
+& Tests reachability and measures round-trip time. Network layer (ICMP). \\
+
+\texttt{traceroute}
+& \texttt{traceroute google.com}
+& Shows the routers/hops to a destination and their delays. Network layer. \\
+
+\texttt{ifconfig}
+& \texttt{ifconfig eth0}
+& Displays network-interface information such as IP, MAC address, and MTU. Link/network layers. \\
+
+\texttt{ip}
+& \texttt{ip addr show eth0}
+& Displays interfaces, addresses, routes, and ARP neighbours. Link/network layers. \\
+
+\texttt{arp}
+& \texttt{arp}
+& Displays IP--MAC mappings on the local network. Link layer. \\
+
+\texttt{nslookup}
+& \texttt{nslookup google.com}
+& Queries DNS records. Application layer (DNS). \\
+
+\texttt{dig}
+& \texttt{dig google.com}
+& Performs detailed DNS queries. Application layer (DNS). \\
+
+\texttt{curl}
+& \texttt{curl -I https://google.com}
+& Sends web requests and displays response headers. Application layer (HTTP/HTTPS). \\
+
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\end{multicols}
+
+\end{document}
