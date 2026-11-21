@@ -745,12 +745,6 @@ exceptions.)
 \bottomrule
 \end{tabular}\par\endgroup
 
-\textbf{IP Fragmentation.} A fragment has its own IP header, a shared
-Identification value, a Fragment Offset (in 8-byte units), and the More
-Fragments flag. When a TCP segment is fragmented, only the first fragment
-contains the TCP header; later fragments carry payload. Reassembly is at the
-final destination.
-
 \textbf{Subnet.} A network formed by a group of “directly” interconnected hosts. Hosts in the same subnet have the same network prefix of IP address. Can reach each other without router.
 
 \textbf{Classless Inter-domain Routing (CIDR).} Internet's IP Address assigning strategy.
@@ -783,6 +777,12 @@ Exchange routing table every 30 seconds over UDP port 520.
 \begin{compactfigure}
 \includegraphics[width=0.75\linewidth]{network/ipv4.png}
 \end{compactfigure}
+
+\textbf{IP Fragmentation.} A fragment has its own IP header, a shared
+Identification value, a Fragment Offset (in 8-byte units), and the More
+Fragments flag. When a TCP segment is fragmented, only the first fragment
+contains the TCP header; later fragments carry payload. Reassembly is at the
+final destination.
 
 \subsection{Network Address Translation (NAT)}
 Maps one IP addresses space into another \texttt{<source IP, source port, dest IP, dest port>}. One table entry is $4 + 2 + 4 + 2 =12 \text{ bytes}$
