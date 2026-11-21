@@ -883,7 +883,7 @@ No time slots, no synchronisation. When fresh frame:
 
 \textbf{Carrier Sense Multiple Access}
 Listen before transmit. If channel idle, transmit, else defer transmission.
-Possible collision from propagation delay
+Possible collision from propagation delay - node cannot instantly detect if another node started transmitting.
 
 \textbf{Carrier Sense Multiple Access/Collision Detection}
 Same as above, but if collision detected, abort transmission and retransmit after random delay (backoff algorithm)
@@ -1004,8 +1004,7 @@ Max size: 1500 bytes (MTU). Min size: 46 bytes
 
 \textbf{Type \& CRC}
 Type identifies the enclosed upper-layer protocol (e.g. IP or ARP). CRC is
-checked by the receiver; a corrupted frame is dropped. Ethernet itself has
-no ACK/NAK, so any recovery is performed by a higher layer (e.g. TCP).
+checked by the receiver; a corrupted frame is dropped. Recovery is performed by a higher layer (e.g. TCP).
 
 \textbf{Preamble}
 7 bytes of pattern 10101010 (AAHex) + 1 byte of pattern 10101011 (ABHex) (i.e. `start of frame'). Used to synchronize receiver and sender clock rates. Used to tell receiver the "width" of a bit.
@@ -1036,9 +1035,7 @@ unknown (or broadcast) $\rightarrow$ flood all ports except the incoming one.
 \end{compactfigure}
 
 \subsection{MAC (Media Access Control) Address}
-Every adapter (NIC) has a MAC address (aka physical or LAN address). Typically 48 bits, burned in NIC ROM. E.g. \texttt{5C-F9-DD-E8-E3-D2}.
-Broadcast address: \texttt{FF-FF-FF-FF-FF-FF}.
-First three bytes indicate vendor. Administered by IEEE.
+Every adapter (NIC) has a MAC address (aka physical or LAN address). Burned in NIC ROM. E.g. \texttt{5C-F9-DD-E8-E3-D2}. First three bytes indicate vendor. Administered by IEEE.
 
 \subsection{IP vs. MAC Address}
 \begingroup
@@ -1055,8 +1052,6 @@ First three bytes indicate vendor. Administered by IEEE.
 \end{tabular}
 \endgroup
 
-\textbf{At a router:} remove incoming frame, route its IP datagram, then build a new frame. End-host IP src/dst normally stay the same; MAC src/dst change at every routed hop.
-
 \subsection{Address Resolution Protocol (ARP)}
 Query mechanism to learn a MAC address given an IPv4 address \emph{on the
 same subnet}. Each IP node has an ARP table:
@@ -1064,12 +1059,12 @@ same subnet}. Each IP node has an ARP table:
 mappings expire after the TTL.
 
 \textbf{Within Same Subnet}
-If A knows B’s MAC address from its ARP table, create a frame to B and send
-it. Only B processes it; other NICs ignore it. On a cache miss, A broadcasts
-an ARP query containing B's IP, with destination MAC
-\texttt{FF-FF-FF-FF-FF-FF}. All local nodes receive it, but only B unicasts
-its MAC reply; A caches the mapping, then sends the data frame. ARP broadcasts
-do not cross routers.
+\begin{enumerate}
+\item If A has B's MAC in its ARP table, send frame directly to B.
+\item On cache miss, A broadcasts ARP query for B's IP with dest. MAC \texttt{FF-FF-FF-FF-FF-FF} (broadcast address).
+\item B replies with a unicase frame containing its MAC; A caches the mapping and sends the frame.
+\end{enumerate}
+ARP broadcasts stay within the subnet.
 
 \textbf{Sending to a Different Subnet} (host A $\rightarrow$ host B via gateway R)
 \begin{compactfigure}
