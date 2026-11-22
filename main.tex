@@ -1203,7 +1203,31 @@ Drawback: requires sender, receiver know to shared secret key. How to agree on t
 \textbf{Polyalphabetic encryption}
 Use $n$ substitution ciphers.
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{security/poly.png}
+\resizebox{0.96\linewidth}{!}{%
+  \definecolor{polystripeA}{RGB}{203,237,221}
+  \definecolor{polystripeB}{RGB}{230,246,239}
+  \begin{tikzpicture}[
+    x=0.29cm,y=0.34cm,
+    polycell/.style={draw=white,line width=0.25pt,minimum width=0.29cm,minimum height=0.34cm,inner sep=0pt,outer sep=0pt},
+    polyletter/.style={font=\bfseries\ttfamily\tiny,text=blue!70!black}
+  ]
+    % The three rows are Caesar shifts of 3, 6 and 9 positions.
+    \node[polycell,fill={rgb,255:red,0;green,200;blue,151}] at (0,0) {};
+    \foreach \letter [count=\i from 1] in {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}
+      \node[polycell,fill={rgb,255:red,0;green,200;blue,151},font=\bfseries\ttfamily\tiny] at (\i,0) {\letter};
+    \foreach \row/\shade in {1/polystripeA,2/polystripeB,3/polystripeA}
+      \node[polycell,fill=\shade,text=red!80!black,font=\tiny] at (0,-\row) {$C_{\row}$};
+    \foreach \letter [count=\i from 1] in {d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,a,b,c}
+      \node[polycell,fill=polystripeA,polyletter] at (\i,-1) {\letter};
+    \foreach \letter [count=\i from 1] in {g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,a,b,c,d,e,f}
+      \node[polycell,fill=polystripeB,polyletter] at (\i,-2) {\letter};
+    \foreach \letter [count=\i from 1] in {j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,a,b,c,d,e,f,g,h,i}
+      \node[polycell,fill=polystripeA,polyletter] at (\i,-3) {\letter};
+    \node[anchor=west,font=\scriptsize] at (-0.45,-4.25) {Cycling Pattern: \textcolor{red!80!black}{$C_1C_3C_3C_2$}};
+    \node[anchor=west,font=\scriptsize] at (-0.45,-5.2) {\textcolor{blue!70!black}{e.g.:} \textbf{\texttt{plaintext: bob, i love you. alice}}};
+    \node[anchor=west,font=\scriptsize] at (-0.45,-6.2) {\phantom{e.g.:}\,\textbf{\texttt{ciphertext: \textcolor{blue!70!black}{exk, o oxek bxd. durih}}}};
+  \end{tikzpicture}%
+}
 \end{compactfigure}
 \textbf{Encryption key:} $n$ substitution ciphers, and cycling pattern.
 \textbf{Block ciphers}
