@@ -897,10 +897,14 @@ ID value, Fragment Offset (in 8-byte units), and More Fragments flag. When TCP s
 is fragmented, only the first fragment has the TCP header; rest carry payload.
 Reassembly at the final destination.
 
+\begin{compactfigure}
+\includegraphics[width=0.95\linewidth]{network/ip-fragmentation.png}
+\end{compactfigure}
+
 \subsection{Network Address Translation (NAT)}
 Maps one IP addresses space into another \texttt{<source IP, source port, dest IP, dest port>}. One table entry is $4 + 2 + 4 + 2 =12 \text{ bytes}$
 \begin{compactfigure}
-\includegraphics[width=0.80\linewidth]{network/nat.png}
+\includegraphics[width=0.9\linewidth]{network/nat.png}
 \end{compactfigure}
 \begin{itemize}
 \item Replace (source IP address, port \#) of every outgoing datagram to (NAT IP address, new port \#).
