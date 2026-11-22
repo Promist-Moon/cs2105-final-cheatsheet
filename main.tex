@@ -57,6 +57,18 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \usepackage{colortbl}
+% Pastel colours shared by the layer overview and section headings.
+\definecolor{layerapplication}{RGB}{231,215,238}
+\definecolor{layertransport}{RGB}{207,235,245}
+\definecolor{layernetwork}{RGB}{215,239,215}
+\definecolor{layerlink}{RGB}{250,244,205}
+\definecolor{layerphysical}{RGB}{250,225,205}
+\newcommand{\layerheading}[2]{%
+  \section*{\begingroup\setlength{\fboxsep}{1pt}%
+    \colorbox{#1}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\strut #2}}%
+  \endgroup}%
+  \sectionrule
+}
 \usepackage[normalem]{ulem}
 \newcommand{\del}[1]{{\color{red}\sout{#1}}} % mark for deletion; set body to {} to hide all
 \usepackage{tcolorbox}
@@ -396,11 +408,11 @@
           \node[cell,fill=gray!55,minimum width=\w cm,anchor=south west] at (\x,2.75) {\label};
         }
         \foreach \y/\num/\layer/\shade/\proto/\pdu/\addr in {
-          2.2/5/Application/violet!45/{\shortstack{HTTP, SMTP\\DNS, DHCP}}/{Message}/{n/a},
-          1.65/4/Transport/cyan!45/{TCP, UDP}/{Segment}/{Port},
-          1.1/3/Network/green!45/{IP}/{Datagram}/{IP address},
-          .55/2/Data Link/yellow!65/{\shortstack{Ethernet, Wi-Fi\\ARP}}/{Frame}/{MAC address},
-        0/1/Physical/orange!45/{10BASE-T, 802.11}/{Bits}/{n/a}} {
+          2.2/5/Application/layerapplication/{\shortstack{HTTP, SMTP\\DNS, DHCP}}/{Message}/{n/a},
+          1.65/4/Transport/layertransport/{TCP, UDP}/{Segment}/{Port},
+          1.1/3/Network/layernetwork/{IP}/{Datagram}/{IP address},
+          .55/2/Data Link/layerlink/{\shortstack{Ethernet, Wi-Fi\\ARP}}/{Frame}/{MAC address},
+        0/1/Physical/layerphysical/{10BASE-T, 802.11}/{Bits}/{n/a}} {
           \node[cell,fill=gray!25,minimum width=.45cm,anchor=south west] at (0,\y) {\num};
           \node[cell,fill=\shade,minimum width=1.45cm,anchor=south west] at (.45,\y) {\layer};
           \node[cell,fill=gray!25,minimum width=1.55cm,anchor=south west,font=\tiny] at (1.9,\y) {\proto};
@@ -486,8 +498,7 @@
 
   {\setlength{\fboxsep}{1pt}\colorbox{black!10}{\textit{Utilisation ($U$):}}} fraction of a link's bandwidth used: $U=T/R$ (multiply by $100$ for percentage).
 
-  \section*{Layer 1 - Application Layer}
-  \sectionrule
+  \layerheading{layerapplication}{Layer 5 - Application Layer}
 
   \subsection{Network Architecture}
   \textbf{Client-Server Architecture}
@@ -566,8 +577,7 @@
     \item For $T$ TCP flows, we need $T + 1$ connection + welcome sockets.
   \end{itemize}
 
-  \section*{Layer 2 - Transport Layer}
-  \sectionrule
+  \layerheading{layertransport}{Layer 4 - Transport Layer}
   Resides in end hosts and provides process-to-process calculation.
 
   \subsection{User Datagram Protocol (UDP)}
@@ -748,8 +758,7 @@ Typically, $\alpha=0.125$,$\beta=0.25$
 \includegraphics[width=0.75\linewidth]{transport/handshake-close.png}
 \end{compactfigure}
 
-\section*{Layer 3 - Network Layer}
-\sectionrule
+\layerheading{layernetwork}{Layer 3 - Network Layer}
 The network layer delivers packets to receiving hosts
 
 \subsection{IP Address} Used to identify a host (or a router).
@@ -808,11 +817,51 @@ $c(x, y)$: cost of link between routers x and y, infinity if x and y are not dir
 Exchange routing table every 30 seconds over UDP port 520.
 “Self-repair”: if no update from a neighbour router for 3 minutes, assume neighbour has failed
 
+\noindent\begin{minipage}{\linewidth}
 \textbf{IPv4\\Datagram}
 \vspace{-2.2em}
 \begin{compactfigure}\raggedleft
-\includegraphics[width=0.75\linewidth]{network/ipv4.png}
+\resizebox{0.75\linewidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth,
+  font=\sffamily\fontsize{16}{18}\selectfont]
+  % The five purple rows are the minimum 20-byte IPv4 header.
+  \fill[violet!25] (5.4,3.0) rectangle (16.1,8.3);
+  \draw[line width=1pt] (5.4,0.1) rectangle (16.1,8.3);
+  \draw[line width=1pt] (5.4,7.2) -- (16.1,7.2)
+    (5.4,6.1) -- (16.1,6.1) (5.4,5.0) -- (16.1,5.0)
+    (5.4,4.0) -- (16.1,4.0) (5.4,3.0) -- (16.1,3.0);
+  \draw[line width=1pt] (6.35,7.2) -- (6.35,8.3)
+    (7.65,7.2) -- (7.65,8.3) (10.75,7.2) -- (10.75,8.3)
+    (10.75,6.1) -- (10.75,7.2) (12.1,6.1) -- (12.1,7.2)
+    (7.7,5.0) -- (7.7,6.1) (10.75,5.0) -- (10.75,6.1);
+  \node at (5.86,7.75) {ver};
+  \node at (13.43,7.75) {IP datagram length};
+  \node at (8.08,6.65) {identifier};
+  \node at (11.43,6.65) {flags};
+  \node at (14.1,6.65) {fragment offset};
+  \node at (6.55,5.55) {TTL};
+  \node[align=center] at (9.22,5.55) {upper layer\\protocol};
+  \node at (13.43,5.55) {header checksum};
+  \node at (10.75,4.5) {source IP address};
+  \node at (10.75,3.5) {destination IP address};
+  \node[align=center] at (10.75,1.55) {data\\(typically a TCP or UDP segment)};
+  \draw[red,line width=1pt,rounded corners=2.5mm] (5.65,6.22) rectangle (15.96,7.08);
+  \draw[red,line width=1pt] (4.47,6.65) -- (5.65,6.65);
+  \draw[red,line width=1pt] (4.48,8.25) -- (5.27,7.76);
+  \node[align=right,anchor=east] at (4.35,8.45) {IP protocol\\version number};
+  \node[align=right,anchor=east] at (4.35,6.65) {for fragmentation /\\reassembly};
+  \draw[<-] (5.4,9.38) -- (9.45,9.38);
+  \draw[->] (11.9,9.38) -- (16.1,9.38);
+  \node at (10.75,9.38) {32 bits};
+  \node at (5.4,8.8) {1};
+  \node at (10.75,8.8) {16};
+  \node at (15.85,8.8) {32};
+  \node[anchor=west] at (0.45,1.7) {\textcolor{blue!70!black}{$\blacklozenge$}\quad IP header};
+  \node[anchor=west] at (1.35,0.65) {\textcolor{blue!70!black}{$\blacksquare$}\quad 20 bytes};
+\end{tikzpicture}%
+}
 \end{compactfigure}
+\end{minipage}
 
 \textbf{IPv4 IHL:} 4-bit header length in 4-byte words (5 = 20 bytes).
 \textbf{IP Fragmentation.} Each fragment has its own IP header, shared
@@ -847,8 +896,7 @@ info. E.g. error reporting: unreachable host / network / port / protocol and ech
 \includegraphics[width=0.75\linewidth]{network/icmp-type.png}
 \end{compactfigure}
 
-\section*{Layer 4 - Link Layer}
-\sectionrule
+\layerheading{layerlink}{Layer 2 - Link Layer}
 Transfer IP datagrams b/w adjacent nodes (hosts or routers) over one link, encapsulated in link-layer frames.
 
 \textbf{Communication channel: } transmission medium of the data signals. E.g. copper wire, optical fiber, satellite. \\
@@ -1170,29 +1218,23 @@ Divide shared broadcast channel into smaller, dedicated sub-channels and allocat
 \noindent\begin{minipage}{\linewidth}
 \textbf{Cyclic Redundancy Check (CRC)}
 \begin{compactfigure}
-\begin{minipage}[t]{0.46\linewidth}
-  \fontsize{5.6}{6.5}\selectfont\raggedright
-  \textbf{Decimal analogy} (not CRC)\\
-  $D=21027845$, $G=401$, $r=3$ digits.\\
-  $X=D\cdot10^3+999=21027845999$.\\
-  $y=X\bmod G=281$.\\
-  $M=X-y=21027845718$.\\
-  $M$ is divisible by $G$; the nines prevent borrowing from $D$.
-\end{minipage}\hfill
-\begin{minipage}[t]{0.52\linewidth}
-  \fontsize{5.6}{6.5}\selectfont\raggedright\setlength{\fboxsep}{0.4pt}
-  \textbf{Binary CRC} (XOR; $\downarrow$ = bring down)\\
-  $D=\colorbox{cyan!25}{\texttt{101110}}$, $G=\colorbox{violet!25}{\texttt{1001}}$, $r=4-1=3$.\\
-  Divide $\texttt{101110000}$ by $G$:\\
+\begingroup\setlength{\fboxsep}{1.4pt}\setlength{\fboxrule}{0.35pt}
+\fbox{\begin{minipage}[t]{0.95\linewidth}
+  \fontsize{6.4}{7}\selectfont\raggedright\setlength{\fboxsep}{0.4pt}
+  \textbf{Sender: binary CRC} (XOR; $\downarrow$ = bring down)\\
+  $D=\colorbox{cyan!25}{\texttt{101110}}$, $G=\colorbox{violet!25}{\texttt{1001}}$.\\
+  $r=(\text{bits in }G)-1=3$.\\
+  Append $r$ zeros: \texttt{101110}\colorbox{orange!35}{\texttt{000}}\\
   \texttt{1011 $\oplus$ 1001 = 0010} $\downarrow\texttt{10}$\\
   \texttt{1010 $\oplus$ 1001 = 0011} $\downarrow\texttt{00}$\\
   \texttt{1100 $\oplus$ 1001 = 0101} $\downarrow\texttt{0}$\\
   \texttt{1010 $\oplus$ 1001 = 0011}\\
-  $R=\colorbox{yellow!55}{\texttt{011}}$; send $D\Vert R=\texttt{101110011}$.
-\end{minipage}
+  $R=\colorbox{yellow!55}{\texttt{011}}$; send $D\Vert R=\texttt{101110011}$.\\
+  \textbf{Receiver:} XOR-divide \texttt{101110011} by $G$: remainder \texttt{000} = no error detected; nonzero = error.
+\end{minipage}}\endgroup
 \end{compactfigure}
 \end{minipage}
-Sender sends $(D, R)$. Receiver knows $G$, divide $(D, R)$ by $G$. Error when non-zero remainder.
+A zero remainder does not guarantee error-free data.
 Easy to implement on hardware. If $G(x)$ has factor $(x+1)$, CRC detects all odd-numbered bit errors. CRC of $r$ bits can detect all burst errors of up to $r$ bits, and all burst errors of greater than $r$ bits with probability $1-0.5^r$
 
 \subsection{Local Area Network (LAN)}
