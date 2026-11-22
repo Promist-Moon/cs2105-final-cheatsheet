@@ -581,6 +581,7 @@
   \begin{itemize}
     \item Sender attaches dest. IP address and port no. to each packet.
     \item Receiver extracts sender IP address and port no. from received packet.
+    \item All UDP flows require same 1 socket.
   \end{itemize}
 
   \textbf{TCP Socket Programming}
@@ -588,6 +589,7 @@
     \item Client establishes a TCP connection.
     \item Server creates a new connection socket for each client; can communicate with multiple clients separately.
     \item Server's welcome socket listens on a fixed port, e.g.\ port $80$.
+    \item For $T$ TCP flows, we need $T + 1$ connection + welcome sockets.
   \end{itemize}
 
   \section*{Layer 2 - Transport Layer}
