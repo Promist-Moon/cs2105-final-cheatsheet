@@ -750,6 +750,13 @@ Action / ACK & wait & 7000 & 7000 & 8000 & 10000 \\
 \end{tabular}\par\endgroup
 \textit{Assumes the second segment arrives before the delayed ACK timer expires.}\par\endgroup
 
+\textbf{TCP Timeout Interval} TCP continuously updates timeout interval based on estimated RTT.
+$\text{Est.RTT} = (1-\alpha)\text{Est.RTT} +\alpha\text{SampleRTT}$,\\
+$\text{DevRTT} = (1-\beta)\text{DevRTT+}\beta\left|\text{SampleRTT}-\text{EstRTT}\right|$\\
+$\text{TimeoutInterval} = \text{Est.RTT}+4\text{DevRTT}$\\
+Typically, $\alpha=0.125$,$\beta=0.25$
+
+\columnbreak
 \par\vspace{1pt}\noindent\begingroup\scriptsize
 \textbf{TCP Sender Events}\par
 \begingroup\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{.95}
@@ -770,13 +777,6 @@ Duplicate ACK ($y \le \text{\textit{base}}$) & Duplicate ACK count += 1; if coun
 \endgroup
 
 TCP feedback allows at most one retransmission of old tickets, but multiple retransmission of new ones (e.g. when a delayed ACK is received and window moves by multiple MSS).
-
-\textbf{TCP Timeout Interval} TCP continuously updates timeout interval based on estimated RTT.
-
-$\text{Est.RTT} = (1-\alpha)\text{Est.RTT} +\alpha\text{SampleRTT}$,\\
-$\text{DevRTT} = (1-\beta)\text{DevRTT+}\beta\left|\text{SampleRTT}-\text{EstRTT}\right|$\\
-$\text{TimeoutInterval} = \text{Est.RTT}+4\text{DevRTT}$\\
-Typically, $\alpha=0.125$,$\beta=0.25$
 
 \textbf{TCP Handshake}
 \textit{Establishing Connection}
