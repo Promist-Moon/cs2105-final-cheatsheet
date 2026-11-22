@@ -776,7 +776,7 @@ Duplicate ACK ($y \le \text{\textit{base}}$) & Duplicate ACK count += 1; if coun
 \vspace{1pt}
 \endgroup
 
-TCP feedback allows at most one retransmission of old tickets, but multiple retransmission of new ones (e.g. when a delayed ACK is received and window moves by multiple MSS).
+On loss, TCP retransmits the oldest unACKed segment, not the whole window. But one ACK can slide the window by several MSS (e.g. after a delayed ACK), letting the sender send several new segments at once.
 
 \textbf{TCP Handshake}
 \textit{Establishing Connection}
