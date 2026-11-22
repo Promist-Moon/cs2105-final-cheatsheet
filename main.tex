@@ -931,11 +931,19 @@ Exchange routing table every 30 seconds over UDP port 520.
 \end{compactfigure}
 \end{minipage}
 
-\textbf{IPv4 IHL:} 4-bit header length in 4-byte words (5 = 20 bytes).
-\textbf{IP Fragmentation.} Each fragment has its own IP header, shared
-ID value, Fragment Offset (in 8-byte units), and More Fragments flag. When TCP segment
-is fragmented, only the first fragment has the TCP header; rest carry payload.
-Reassembly at the final destination.
+\textbf{IPv4 IHL:} 4-bit header length in 4-byte words (5 = 20 bytes).\par
+\begingroup\fontsize{6.6}{7.2}\selectfont\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{0.95}
+\noindent\begin{tabularx}{\linewidth}{|>{\raggedright\arraybackslash}p{.17\linewidth}|>{\raggedright\arraybackslash}X|}
+\hline
+\rowcolor{gray!15}\textbf{Splitting} & \textbf{What happens} \\\hline
+\textbf{TCP} & TCP splits app stream; each segment has a TCP header. TCP orders data at receiver. \\\hline
+\textbf{IPv4} & IP splits datagram payload; each fragment has an IP header and shared ID. IP reassembles at destination. \\\hline
+\end{tabularx}\par
+\raggedright\textbf{IP payload:} TCP header is normally only in the first fragment, not copied; it can span fragments. Non-final fragment payloads must be multiples of 8 bytes.\par
+\textbf{Offset:} preceding IP payload bytes $\div 8$ (include TCP header, exclude IP headers).\par
+\textbf{DF:} 0 = may fragment; 1 = don't fragment.\quad
+\textbf{MF:} 0 = last or unfragmented; 1 = more fragments.\par\endgroup
 
 \begin{compactfigure}
 \includegraphics[width=0.95\linewidth]{network/ip-fragmentation.png}
@@ -952,9 +960,7 @@ Maps one IP addresses space into another \texttt{<source IP, source port, dest I
 \item Replace (NAT IP address, new port \#) in dest fields of every incoming datagram with corresponding (source IP address, port \#) stored in NAT table
 \end{itemize}
 
-\textbf{Benefits.} Only need one public IP for NAT router. All hosts use private IPs, so addresses of hosts can be changed in local network without notifying outside.
-Can change ISP without changing addresses of hosts
-in local network. Hosts inside local network are not explicitly addressable and visible by outside world (security).
+\textbf{Benefits.} One public IP serves private hosts. Local addresses can change without notifying outsiders; ISPs can change without changing local addresses. Internal hosts are not directly visible or addressable from outside.
 
 \textbf{MTU (Max Transfer Unit)} the maximum amount of data a link-level frame can carry.
 
@@ -963,7 +969,6 @@ in local network. Hosts inside local network are not explicitly addressable and 
 Used by hosts \& routers to share network-level
 info. E.g. error reporting: unreachable host / network / port / protocol and echo request/reply (used by \texttt{ping})
 
-\vspace{0.5em}
 \begin{compactfigure}
 \resizebox{0.95\linewidth}{!}{%
 \begin{tikzpicture}[x=1cm,y=.76cm,
