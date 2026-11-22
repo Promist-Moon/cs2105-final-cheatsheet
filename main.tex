@@ -20,6 +20,7 @@
 \usepackage{graphicx}
 \usepackage{mathtools}
 \usepackage{subcaption}
+\usepackage{listings}
 
 % ---------- Multi-column layout ----------
 \usepackage{multicol}
@@ -1275,6 +1276,13 @@ dig google.com & Detailed DNS queries. Application (DNS). \\
 curl -I https://google.com & Sends web requests; shows response headers. Application (HTTP/S). \\
 \bottomrule
 \end{tabularx}\par\endgroup
+
+\begingroup
+    \textbf{Binary/addr stuff}\\
+    \lstinline[]|128, 64,  32,  16,  8,   4,   2,   1|\\
+    \lstinline[]|128, 192, 224, 240, 248, 252, 254, 255|
+    \par
+\endgroup
 
 \end{multicols}
 
