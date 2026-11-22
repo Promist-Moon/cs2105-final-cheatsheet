@@ -1064,11 +1064,15 @@ Possible collision from propagation delay - node cannot instantly detect if anot
 \textbf{Carrier Sense Multiple Access/Collision Detection}
 If collision detected, abort transmission and retransmit after random delay (backoff algorithm)
 
-\textbf{Backoff Algorithm:} after \(m\)th collision, randomly select waiting time \(K\) before retransmitting, from set $\{0,1,...,2^m-1\}$ which doubles after every collision $\rightarrow$ retransmission probability \(p = 1/2^m\) decreases. This binary exponential backoff adapts to network load: more collisions $\rightarrow$ heavier traffic, longer back-off interval.\\
-Becomes TCP's problem past 16 collisions.
+\textbf{Backoff Algorithm:} after \(m\)th collision, randomly select waiting time of 
+\(K\) \textit{time units} before retransmitting, from set $\{0,1,...,2^m-1\}$ which 
+doubles after every collision $\rightarrow$ retransmission probability \(p = 1/2^m\) 
+decreases. This binary exponential backoff adapts to network load: more collisions 
+$\rightarrow$ heavier traffic, longer back-off interval. For Ethernet, 1 time unit 
+is the time to send 512 bits. Becomes TCP's problem past 16 collisions.
 
 \begin{compactfigure}
-\resizebox{0.88\linewidth}{!}{%
+\resizebox{0.95\linewidth}{!}{%
   \definecolor{csmagreen}{RGB}{86,198,157}
   \definecolor{csmared}{RGB}{242,129,131}
   \definecolor{csmaoverlap}{RGB}{128,104,79}
