@@ -920,7 +920,41 @@ info. E.g. error reporting: unreachable host / network / port / protocol and ech
 
 \vspace{0.5em}
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{network/icmp-type.png}
+\resizebox{0.95\linewidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=.76cm,
+    font=\sffamily\fontsize{10}{11}\selectfont,
+    celltext/.style={inner sep=0pt,align=center}]
+  \definecolor{icmpheader}{RGB}{96,199,157}
+  \definecolor{icmprowA}{RGB}{209,235,223}
+  \definecolor{icmprowB}{RGB}{230,243,237}
+  \node[celltext] at (4.1,4.78) {ICMP header: Type + Code + Checksum + others.};
+  \fill[icmpheader] (0,3.85) rectangle (8.2,4.40);
+  \foreach \y/\shade in {3.30/icmprowA,2.75/icmprowB,2.20/icmprowA,
+      1.65/icmprowB,1.10/icmprowA,.55/icmprowB} {
+    \fill[\shade] (0,\y) rectangle (8.2,\y+.55);
+  }
+  \draw[white,line width=.65pt] (1.6,.55) -- (1.6,4.40)
+    (3.25,.55) -- (3.25,4.40);
+  \foreach \y in {1.10,1.65,2.20,2.75,3.30,3.85} {
+    \draw[white,line width=.65pt] (0,\y) -- (8.2,\y);
+  }
+  \node[celltext,text=white,font=\sffamily\bfseries\fontsize{10}{11}\selectfont] at (.8,4.125) {Type};
+  \node[celltext,text=white,font=\sffamily\bfseries\fontsize{10}{11}\selectfont] at (2.425,4.125) {Code};
+  \node[celltext,text=white,font=\sffamily\bfseries\fontsize{10}{11}\selectfont] at (5.725,4.125) {Description};
+  \foreach \y/\type/\code/\description in {
+    3.575/8/0/{echo request (ping)},
+    3.025/0/0/{echo reply (ping)},
+    2.475/3/1/{dest host unreachable},
+    1.925/3/3/{dest port unreachable},
+    1.375/11/0/{TTL expired},
+    .825/12/0/{bad IP header}} {
+      \node[celltext] at (.8,\y) {\type};
+      \node[celltext] at (2.425,\y) {\code};
+      \node[celltext] at (5.725,\y) {\description};
+  }
+  \node[celltext] at (4.1,.25) {Selected ICMP Type and subtype (Code)};
+\end{tikzpicture}%
+}
 \end{compactfigure}
 
 \layerheading{layerlink}{Layer 2 - Link Layer}
