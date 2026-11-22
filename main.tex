@@ -1344,7 +1344,26 @@ Services must be accessible and available to users.
 
 ACL is a table of rules to apply to packets.
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{security/acl.png}
+\resizebox{0.95\linewidth}{!}{%
+  \begingroup\scriptsize\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{1.05}
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    \rowcolor[RGB]{202,202,246}
+    action & \shortstack{source\\address} & \shortstack{dest\\address} & protocol & \shortstack{source\\port} & \shortstack{dest\\port} & \shortstack{flag\\bit} \\
+    \hline
+    allow & 222.22/16 & \shortstack{outside of\\222.22/16} & TCP & $>1023$ & 80 & any \\
+    \hline
+    allow & \shortstack{outside of\\222.22/16} & 222.22/16 & TCP & 80 & $>1023$ & ACK \\
+    \hline
+    allow & 222.22/16 & \shortstack{outside of\\222.22/16} & UDP & $>1023$ & 53 & --- \\
+    \hline
+    allow & \shortstack{outside of\\222.22/16} & 222.22/16 & UDP & 53 & $>1023$ & --- \\
+    \hline
+    deny & all & all & all & all & all & all \\
+    \hline
+  \end{tabular}%
+  \endgroup
+}
 \end{compactfigure}
 
 Limitation: IP spoofing: router can’t know if data `really' comes from claimed source. Tradeoff: degree of communication with outside world limited.
