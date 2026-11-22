@@ -67,15 +67,16 @@
   \ifnum\value{page}=\getpagerefnumber{LastPage}\relax
     \smash{\raisebox{11pt}{\parbox{\textwidth}{\footnotesize
       \hrule\vspace{2pt}
-      \begin{tabularx}{\textwidth}{@{}*{4}{>{\raggedright\arraybackslash}X}@{}}
+      \begin{tabularx}{\textwidth}{@{}*{3}{>{\raggedright\arraybackslash}X}@{}}
         \texttt{ping}: reachability and RTT (network/ICMP) &
         \texttt{traceroute}: destination hops and delays (network) &
-        \texttt{ifconfig}: interface IP, MAC and MTU (link/network) &
-        \texttt{ip}: interfaces, routes, neighbours (link/network) \\
+        \texttt{ifconfig}: interface IP, MAC and MTU (link/network) \\
+        \texttt{ip}: interfaces, routes, neighbours (link/network) &
         \texttt{arp}: local IP--MAC mappings (link) &
-        \texttt{nslookup}: queries DNS records (application/DNS) &
+        \texttt{nslookup}: queries DNS records (application/DNS) \\
         \texttt{dig}: detailed DNS queries (application/DNS) &
-        \texttt{curl}: HTTP(S) requests, headers (application)
+        \texttt{curl}: HTTP(S) requests, headers (application) &
+        \texttt{telnet}: remote terminal; tests TCP ports (application)
       \end{tabularx}
       \vspace{1pt}\centering\smash{\raisebox{-2pt}{\tiny Cheatsheet made by Emilia Ayu, Chow Bing Hang, and Nathan Tew}}
     }}}%
