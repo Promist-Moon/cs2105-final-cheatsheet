@@ -614,10 +614,12 @@ Network layer has unreliable communication. Needs a reliable transport layer pro
 \item \texttt{rdt1.0}: assumes reliable channel. no error.
 \item \texttt{rdt2.0}: detect bit errors with checksum; corrupted ACKs/NAKs cannot be recovered.
 \item \texttt{rdt2.1}: use sequence numbers to discard duplicates.
-\item \texttt{rdt2.2}: no NAKs; send ACK w/ seq \# of prev \linebreak received packet. Duplicate indicates error.
+\item \texttt{rdt2.2}: no NAKs; send ACK w/ seq \# of prev received packet. Alt. b/w 0 and 1. Duplicate = error.
 \item \texttt{rdt3.0}: handles packet loss or corruption with timer (if packet is delayed). Retransmit only on timeout.
 \end{itemize}
-
+\begin{compactfigure}
+\includegraphics[width=0.95\linewidth]{transport/rdt3.0.png}
+\end{compactfigure}
 \textbf{rdt 3.0 Stop and Wait} $U_{\mathrm{s}}=\frac{L/R}{RTT+L/R}$
 
 \textit{Low utilisation; ignore ACK transmission and processing time.}
