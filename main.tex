@@ -59,13 +59,42 @@
 \usepackage{tcolorbox}
 \tcbuselibrary{skins, breakable}
 
-% Small author credit in the footer; no page numbers or header.
-\usepackage{fancyhdr}
+% Compact command reference on the last content page, above the author credit.
+\usepackage{fancyhdr,lastpage,refcount}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyfoot[C]{\tiny Cheatsheet made by Emilia Ayu, Chow Bing Hang, and Nathan Tew}
+\fancyfoot[C]{%
+  \ifnum\value{page}=\getpagerefnumber{LastPage}\relax
+    \smash{\raisebox{42pt}{\parbox{\textwidth}{\normalsize
+      \textbf{Network commands}\\[-1pt]\hrule\vspace{2pt}
+      \begin{tabularx}{\textwidth}{@{}*{4}{>{\raggedright\arraybackslash}X}@{}}
+        \texttt{ping}: tests reachability and round-trip time (network/ICMP) &
+        \texttt{traceroute}: shows hops and delays to a destination (network) &
+        \texttt{ifconfig}: shows interface IP, MAC and MTU (link/network) &
+        \texttt{ip}: shows interfaces, addresses, routes and neighbours (link/network) \\
+        \texttt{arp}: shows local IP--MAC mappings (link) &
+        \texttt{nslookup}: queries DNS records (application/DNS) &
+        \texttt{dig}: performs detailed DNS queries (application/DNS) &
+        \texttt{curl}: sends web requests; can show headers (application/HTTP(S))
+      \end{tabularx}
+      \vspace{1pt}\centering\tiny Cheatsheet made by Emilia Ayu, Chow Bing Hang, and Nathan Tew
+    }}}%
+  \else
+    \tiny Cheatsheet made by Emilia Ayu, Chow Bing Hang, and Nathan Tew
+  \fi
+}
 \renewcommand{\headrulewidth}{0pt}
 \setlength{\footskip}{7pt}
+% Reserve footer space only after the penultimate page has shipped.
+\makeatletter
+\AddToHook{shipout/after}{%
+  \ifnum\value{page}=\numexpr\getpagerefnumber{LastPage}-1\relax
+    \global\advance\textheight by -1cm
+    \global\advance\@colht by -1cm
+    \global\footskip=30pt
+  \fi
+}
+\makeatother
 
 % Zero out paragraph indent/skip to save vertical space
 \setlength{\parindent}{0pt}
@@ -370,6 +399,7 @@
 }
 
 \begin{document}
+\linespread{0.93}\selectfont
 \footnotesize % base font size for body text; tune to 8pt/9pt/tiny as needed
 
 % ============================================================
@@ -1255,52 +1285,6 @@ ACL is a table of rules to apply to packets.
 \end{compactfigure}
 
 Limitation: IP spoofing: router can’t know if data `really' comes from claimed source. Tradeoff: degree of communication with outside world limited.
-
-\section{Network commands}
-\begin{table*}[t]
-\small
-\begin{tabularx}{\textwidth}{@{}p{0.16\textwidth}
-                              p{0.28\textwidth}
-                              X@{}}
-\toprule
-\textbf{Command} & \textbf{Usage} & \textbf{Purpose and layer} \\
-\midrule
-
-\texttt{ping}
-& \texttt{ping google.com}
-& Tests reachability and measures round-trip time. Network layer (ICMP). \\
-
-\texttt{traceroute}
-& \texttt{traceroute google.com}
-& Shows the routers/hops to a destination and their delays. Network layer. \\
-
-\texttt{ifconfig}
-& \texttt{ifconfig eth0}
-& Displays network-interface information such as IP, MAC address, and MTU. Link/network layers. \\
-
-\texttt{ip}
-& \texttt{ip addr show eth0}
-& Displays interfaces, addresses, routes, and ARP neighbours. Link/network layers. \\
-
-\texttt{arp}
-& \texttt{arp}
-& Displays IP--MAC mappings on the local network. Link layer. \\
-
-\texttt{nslookup}
-& \texttt{nslookup google.com}
-& Queries DNS records. Application layer (DNS). \\
-
-\texttt{dig}
-& \texttt{dig google.com}
-& Performs detailed DNS queries. Application layer (DNS). \\
-
-\texttt{curl}
-& \texttt{curl -I https://google.com}
-& Sends web requests and displays response headers. Application layer (HTTP/HTTPS). \\
-
-\bottomrule
-\end{tabularx}
-\end{table*}
 
 \end{multicols}
 
