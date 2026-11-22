@@ -399,6 +399,7 @@
 }
 
 \begin{document}
+\linespread{0.99}\selectfont
 \footnotesize % base font size for body text; tune to 8pt/9pt/tiny as needed
 
 % ============================================================
@@ -994,18 +995,45 @@ Divide shared broadcast channel into smaller, dedicated sub-channels and allocat
 \includegraphics[width=0.75\linewidth]{link/error-d.png}
 \end{compactfigure}
 
-\textbf{Parity Checking}
-Even Parity: sender simply includes one additional bit, chooses its value such that the total number of 1s in the
-$d + 1$ bits is even.
-\begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{link/parity.png}
-\end{compactfigure}
-Errors clustered in bursts - unable to detect even number of bit changes.
-\textbf{Computing gradients}
+\textbf{Parity Checking} Even parity adds bits so each checked group has an even number of 1s. \textbf{1D:} detects odd numbers of flipped bits; even numbers may go undetected.
 
-2D Parity
+\textbf{2D:} Detects any 1- or 2-bit error; corrects 1-bit errors, but not all 2-bit errors. Four flips at a rectangle's corners may go undetected.
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{link/2d.png}
+\resizebox{0.96\linewidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  cell/.style={draw, minimum width=0.43cm, minimum height=0.43cm, inner sep=0pt},
+  parity/.style={cell, fill=gray!25, path picture={
+    \fill[black] (path picture bounding box.north east) -- ++(-0.11cm,0) -- ++(0.11cm,-0.11cm) -- cycle;
+  }}
+]
+  \node[font=\bfseries\scriptsize] at (0.86,1.55) {1D: detected};
+  \foreach \x/\v in {1/0,2/1,3/1}
+    \node[cell] at (\x*0.43,0.62) {\v};
+  \node[cell,fill=red!40] at (0,0.62) {0};
+  \node[parity] at (1.72,0.62) {1};
+  \node[font=\tiny] at (0.65,0.18) {data};
+  \node[font=\tiny] at (1.72,0.18) {parity};
+
+  \node[font=\bfseries\scriptsize] at (3.8,1.55) {2D: undetected};
+  \foreach \x/\y/\v in {0/0/0,1/0/1,2/0/1,0/1/1,1/1/0,2/1/1,0/2/1,1/2/1,2/2/1}
+    \node[cell] at (3.15+\x*0.43,1.05-\y*0.43) {\v};
+  \foreach \x/\y/\v in {0/0/0,1/0/1,0/1/1,1/1/0}
+    \node[cell,fill=red!40] at (3.15+\x*0.43,1.05-\y*0.43) {\v};
+  \foreach \y/\v in {0/0,1/0,2/1}
+    \node[parity] at (4.44,1.05-\y*0.43) {\v};
+  \foreach \x/\v in {0/0,1/0,2/1,3/1}
+    \node[parity] at (3.15+\x*0.43,-0.24) {\v};
+  \draw[thick] (4.225,1.265) -- (4.225,-0.455);
+  \draw[thick] (2.935,-0.025) -- (4.655,-0.025);
+  \node[font=\tiny] at (3.8,-0.65) {all row/column checks pass};
+  \node[draw,fill=red!40,minimum width=0.18cm,minimum height=0.18cm,inner sep=0pt] at (0,-0.65) {};
+  \node[font=\tiny,anchor=west] at (0.14,-0.65) {flipped};
+  \node[draw,fill=gray!25,minimum width=0.18cm,minimum height=0.18cm,inner sep=0pt,
+    path picture={\fill[black] (path picture bounding box.north east) -- ++(-0.07cm,0) -- ++(0.07cm,-0.07cm) -- cycle;}] at (1.05,-0.65) {};
+  \node[font=\tiny,anchor=west] at (1.19,-0.65) {parity};
+\end{tikzpicture}%
+}
 \end{compactfigure}
 
 \textbf{Cyclic Redundancy Check (CRC)}
