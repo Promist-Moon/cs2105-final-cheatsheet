@@ -1326,15 +1326,15 @@ Limitation: IP spoofing: router can’t know if data `really' comes from claimed
 \toprule
 \normalfont\textbf{Usage} & \textbf{Purpose (layer)} \\
 \midrule
-ping google.com & Reachability and RTT. Network (ICMP). \\
+\rowcolor{gray!12} ping google.com & Reachability and RTT. Network (ICMP). \\
 traceroute google.com & Routers/hops to a destination and their delays. Network. \\
-ifconfig eth0 & Interface info: IP, MAC address, MTU. Link/network. \\
+\rowcolor{gray!12} ifconfig eth0 & Interface info: IP, MAC address, MTU. Link/network. \\
 ip addr show eth0 & Interfaces, addresses, routes, ARP neighbours. Link/network. \\
-arp & IP--MAC mappings on the local network. Link. \\
+\rowcolor{gray!12} arp & IP--MAC mappings on the local network. Link. \\
 nslookup google.com & Queries DNS records. Application (DNS). \\
-dig google.com & Detailed DNS queries. Application (DNS). \\
+\rowcolor{gray!12} dig google.com & Detailed DNS queries. Application (DNS). \\
 curl -I https://google.com & Sends web requests; shows response headers. Application (HTTP/S). \\
-telnet example.com 80 & Remote terminal or test a TCP port. Application. \\
+\rowcolor{gray!12} telnet example.com 80 & Remote terminal or test a TCP port. Application. \\
 \bottomrule
 \end{tabularx}\par\endgroup
 
