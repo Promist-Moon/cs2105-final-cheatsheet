@@ -632,13 +632,16 @@ Network layer has unreliable communication. Needs a reliable transport layer pro
 \end{compactfigure}
 
 \subsection{Pipelined Protocols}
-\textbf{Go Back N:} cumulative ACK; ACK[$m$] $\rightarrow$ all packets up to and incl. $m$ are received. Out-of-order packets discarded. One timer for oldest unACK-ed packet. On timeout, send $N$ packets in window from last unACK-ed
+\textbf{Go Back N:} cumulative ACK; ACK[$m$] $\rightarrow$ all packets up to and incl. $m$ are received. Out-of-order packets discarded. One timer for oldest unACK-ed packet. On timeout, send $N$ packets in window from last unACK-ed.
+
+\textbf{Max. sender window} ($k$-bit seq.): $N_{\max}=2^k-1$
 \begin{compactfigure}
 \gobackndiagram
 \end{compactfigure}
 
 \textbf{Selective Repeat} Receiver individually acknowledges all correctly received packets. Buffer out-of-order packets. Sender maintains timer for each unACKed packet. Retransmit only that packet upon timeout.
 
+\textbf{Max. sender window} ($k$-bit seq.): $N_{\max}=2^{k-1}$.
 \begin{compactfigure}
 \selectiverepeatdiagram
 \end{compactfigure}
