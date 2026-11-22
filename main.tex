@@ -1036,7 +1036,7 @@ unknown (or broadcast) $\rightarrow$ flood all ports except the incoming one.
 \end{compactfigure}
 
 \subsection{MAC (Media Access Control) Address}
-Every adapter (NIC) has a MAC address (aka physical or LAN address). Burned in NIC ROM. E.g. \texttt{5C-F9-DD-E8-E3-D2}. First three bytes indicate vendor. Administered by IEEE.
+Every adapter (NIC) has a 48-bit MAC address (aka physical or LAN address). Burned in NIC ROM. E.g. \texttt{5C-F9-DD-E8-E3-D2}. First three bytes (i.e. 6 digits) indicate vendor. Administered by IEEE.
 
 \subsection{IP vs. MAC Address}
 \begingroup
@@ -1061,8 +1061,8 @@ mappings expire after the TTL.
 
 \textbf{Within Same Subnet}
 \begin{enumerate}
-\item If A has B's MAC in its ARP table, send frame directly to B.
-\item On cache miss, A broadcasts ARP query for B's IP with dest. MAC \texttt{FF-FF-FF-FF-FF-FF} (broadcast address).
+\item If A has B's MAC in ARP table, send frame directly
+\item On cache miss, A broadcasts ARP query for B's IP with dest. \texttt{FF-FF-FF-FF-FF-FF} (broadcast addr.)
 \item B replies with a unicase frame containing its MAC; A caches the mapping and sends the frame.
 \end{enumerate}
 ARP broadcasts stay within the subnet.
@@ -1110,16 +1110,16 @@ ARP broadcasts stay within the subnet.
 \item \textbf{R forwards:} R removes the frame, routes using B's IP, and resolves the next-hop MAC on its outgoing link (B's MAC only if B is directly connected).
 \item \textbf{Build a new frame:} R sends the datagram with source MAC = R's outgoing interface and destination MAC = the next hop. Later routers repeat this.
 \end{enumerate}
-\textbf{Remember:} IP source/destination normally stay A/B end-to-end; MAC source/destination change at each routed hop. 
+\textbf{Remember:} IP source/dest. normally stays A/B end-to-end; MAC source/destination change at each routed hop. 
 IP TTL decreases by 1 at routers. If TTL = 0, discard packet and send ICMP error msg to source host.
 
 \subsection{Network Security}
-\textit{Confidentiality} only sender, intended
+\textbf{Confidentiality} only sender, intended
 receiver should `understand' message contents (no eavesdropping).
-\textit{Message integrity} sender, receiver want to ensure message not altered (in transit, or afterwards) without detection (no modification)
-\textit{Authentication} sender, receiver want to
+\textbf{Message integrity} sender, receiver want to ensure message not altered (in transit, or afterwards) without detection (no modification)
+\textbf{Authentication} sender, receiver want to
 confirm identity of each other (no impersonation or repudiation)
-\textit{Nonrepudiation} Proving that a transaction happened between 2 entities
+\textbf{Nonrepudiation} Proving that a transaction happened between 2 entities
 
 \subsection{Cryptography}
 
@@ -1131,22 +1131,21 @@ confirm identity of each other (no impersonation or repudiation)
 \subsection{Symmetric Key Crypto}
 Drawback: requires sender, receiver know to shared secret key. How to agree on this key?
 
-\textit{Polyalphabetic encryption}
+\textbf{Polyalphabetic encryption}
 Use $n$ substitution ciphers.
 \begin{compactfigure}
 \includegraphics[width=0.75\linewidth]{security/poly.png}
 \end{compactfigure}
-Encryption key: $n$ substitution ciphers, and cycling pattern.
-
-\textit{Block ciphers}
+\textbf{Encryption key:} $n$ substitution ciphers, and cycling pattern.
+\textbf{Block ciphers}
 The message to be encrypted is processed in blocks of $K$ bits. Standards
 \begin{enumerate}
 \item DES: Data Encryption Standard (56-bit symmetric key, 64-bit block). 3DES more secure ver.
 \item AES: Advanced Encryption Standard (128 bit blocks; 128, 192, or 256 bit keys).
 \end{enumerate}
 
-\textit{Public Key Cryptography}
-Given public key $K_B^+$, it should be computationally infeasible to derive private key $K_B^-$.
+\textbf{Public Key Cryptography}
+Should be computationally infeasible to derive private key $K_B^-$ from public key $K_B^+$.
 
 \textbf{Encryption vs. signature} (Alice sends to Bob):
 \begingroup\scriptsize\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{1.02}
@@ -1158,7 +1157,7 @@ Encryption & Alice encrypts with Bob's public key; Bob decrypts with his private
 Signature & Alice signs with her private key; Bob verifies using Alice's public key. & Authenticity and integrity; supports non-repudiation, but not confidentiality. \\
 \bottomrule
 \end{tabular}\par\endgroup
-For both, sign the message and encrypt it for Bob. A signature is not general-purpose private-key encryption; use a signature scheme and verify the public-key identity.
+For both confidentiality and auth: Alice signs with $K_A^-$, then encrypts message \& signature with $K_B^+$. Bob must be sure $K_A^+$ is really Alice's (via a certificate/CA).
 
 \subsection*{RSA}
 \textbf{Key generation}
@@ -1182,12 +1181,12 @@ Given public key \((n,e)\) and private key \((n,d)\):
 This is correct since $c^d \equiv (m^e)^d = m^{ed} \equiv m \pmod n$.
 
 \textbf{Session keys}
-To transfer a large file (M) from Alice to Bob
+To transfer a large file (M) from A to B
 \begin{enumerate}
-\item Alice generate a random session Key $K_S$
-\item Encrypt and send key to Bob, using public key $K_B^+$
-\item Bob extracts session key $K_B^-(K_B^+(K_S))$
-\item Alice send M using symmetric key encryption using $K_S$
+\item A generate a random session Key $K_S$
+\item Encrypt and send key to B, using public key $K_B^+$
+\item B extracts session key $K_B^-(K_B^+(K_S))$
+\item A send M using symmetric key encryption using $K_S$
 \end{enumerate}
 
 \subsection{Message Integrity}
@@ -1197,7 +1196,7 @@ To transfer a large file (M) from Alice to Bob
 
 \textbf{Message Authentication Code} Sender \& Receiver share authentication key $s$. Send Send $(m, H(m + s))$.
 
-\textbf{Password Hashing} Passwords cannot be recovered only reset.
+\textbf{Password Hashing} Cannot recover pw, only can reset.
 
 \textbf{Hashing: Timestamping}
 \begin{itemize}
@@ -1258,50 +1257,21 @@ ACL is a table of rules to apply to packets.
 Limitation: IP spoofing: router can’t know if data `really' comes from claimed source. Tradeoff: degree of communication with outside world limited.
 
 \section{Network commands}
-\begin{table*}[t]
-\small
-\begin{tabularx}{\textwidth}{@{}p{0.16\textwidth}
-                              p{0.28\textwidth}
-                              X@{}}
+\begingroup\scriptsize\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{1.02}
+\noindent\begin{tabularx}{\linewidth}{@{}>{\ttfamily\raggedright\arraybackslash}p{.40\linewidth}>{\raggedright\arraybackslash}X@{}}
 \toprule
-\textbf{Command} & \textbf{Usage} & \textbf{Purpose and layer} \\
+\normalfont\textbf{Usage} & \textbf{Purpose (layer)} \\
 \midrule
-
-\texttt{ping}
-& \texttt{ping google.com}
-& Tests reachability and measures round-trip time. Network layer (ICMP). \\
-
-\texttt{traceroute}
-& \texttt{traceroute google.com}
-& Shows the routers/hops to a destination and their delays. Network layer. \\
-
-\texttt{ifconfig}
-& \texttt{ifconfig eth0}
-& Displays network-interface information such as IP, MAC address, and MTU. Link/network layers. \\
-
-\texttt{ip}
-& \texttt{ip addr show eth0}
-& Displays interfaces, addresses, routes, and ARP neighbours. Link/network layers. \\
-
-\texttt{arp}
-& \texttt{arp}
-& Displays IP--MAC mappings on the local network. Link layer. \\
-
-\texttt{nslookup}
-& \texttt{nslookup google.com}
-& Queries DNS records. Application layer (DNS). \\
-
-\texttt{dig}
-& \texttt{dig google.com}
-& Performs detailed DNS queries. Application layer (DNS). \\
-
-\texttt{curl}
-& \texttt{curl -I https://google.com}
-& Sends web requests and displays response headers. Application layer (HTTP/HTTPS). \\
-
+ping google.com & Reachability and RTT. Network (ICMP). \\
+traceroute google.com & Routers/hops to a destination and their delays. Network. \\
+ifconfig eth0 & Interface info: IP, MAC address, MTU. Link/network. \\
+ip addr show eth0 & Interfaces, addresses, routes, ARP neighbours. Link/network. \\
+arp & IP--MAC mappings on the local network. Link. \\
+nslookup google.com & Queries DNS records. Application (DNS). \\
+dig google.com & Detailed DNS queries. Application (DNS). \\
+curl -I https://google.com & Sends web requests; shows response headers. Application (HTTP/S). \\
 \bottomrule
-\end{tabularx}
-\end{table*}
+\end{tabularx}\par\endgroup
 
 \end{multicols}
 
