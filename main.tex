@@ -793,16 +793,16 @@ Maps one IP addresses space into another \texttt{<source IP, source port, dest I
 \item Replace (NAT IP address, new port \#) in dest fields of every incoming datagram with corresponding (source IP address, port \#) stored in NAT table
 \end{itemize}
 
-\textbf{Benefits.} Only need one public IP for the NAT router. All hosts use private IP addresses so addresses of hosts can be changed in local network without notifying outside.
+\textbf{Benefits.} Only need one public IP for NAT router. All hosts use private IPs, so addresses of hosts can be changed in local network without notifying outside.
 Can change ISP without changing addresses of hosts
 in local network. Hosts inside local network are not explicitly addressable and visible by outside world (security).
 
-MTU (Max Transfer Unit) the maximum amount of data a link-level frame can carry.
+\textbf{MTU (Max Transfer Unit)} the maximum amount of data a link-level frame can carry.
 
-\subsection{Internet Control Message Protocol}
+\subsection{Internet Control Message Protocol (ICMP)}
 
-Used by hosts \& routers to communicate network-level
-information. E.g. error reporting: unreachable host / network / port / protocol and echo request/reply (used by \texttt{ping})
+Used by hosts \& routers to share network-level
+info. E.g. error reporting: unreachable host / network / port / protocol and echo request/reply (used by \texttt{ping})
 
 \begin{compactfigure}
 \includegraphics[width=0.75\linewidth]{network/icmp-type.png}
