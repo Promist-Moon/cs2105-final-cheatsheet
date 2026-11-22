@@ -781,8 +781,48 @@ Typically, $\alpha=0.125$,$\beta=0.25$
 \textit{Establishing Connection}
 
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{transport/handshake-open.png}\\[0.5em]
-\includegraphics[width=0.75\linewidth]{transport/handshake-close.png}
+\resizebox{0.75\linewidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth,
+  font=\sffamily\fontsize{8}{9}\selectfont,
+  client/.style={blue!75!black,->,line width=.75pt},
+  server/.style={green!50!black,->,line width=.75pt},
+  life/.style={red!75!black,dashed,->,line width=.55pt},
+  msg/.style={font=\sffamily\fontsize{7.5}{8.5}\selectfont,inner sep=1pt}]
+  \node[text=blue!75!black,font=\sffamily\fontsize{10}{11}\selectfont] at (3.8,4.65) {Client};
+  \node[text=green!50!black,font=\sffamily\fontsize{10}{11}\selectfont] at (8.5,4.65) {Server};
+  \draw[life] (3.8,4.3) -- (3.8,0);
+  \draw[life] (8.5,4.3) -- (8.5,0);
+  \node[align=right,anchor=east] at (3.65,4.02) {choose initial seq num, $x$\\send TCP SYN msg};
+  \node[align=left,anchor=west] at (8.68,2.95) {choose initial seq num, $y$\\send TCP SYNACK msg\\ACKing SYN};
+  \node[align=right,anchor=east] at (3.65,1.27) {send ACK\\this segment may contain\\client-to-server data};
+  \draw[client] (3.9,4.13) -- node[msg,sloped,above] {SYNbit = 1, seq = $x$} (8.4,3.15);
+  \draw[server] (8.4,2.83) -- node[msg,sloped,above] {SYNbit = 1, seq = $y$}
+    node[msg,sloped,below] {ACKbit = 1; ACKnum = $x+1$} (3.9,1.85);
+  \draw[client] (3.9,1.48) -- node[msg,sloped,above] {SYNbit = 0; ACKbit = 1}
+    node[msg,sloped,below] {seq = $x+1$; ACKnum = $y+1$} (8.4,.50);
+\end{tikzpicture}%
+}\\[0.5em]
+\resizebox{0.75\linewidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth,
+  font=\sffamily\fontsize{8}{9}\selectfont,
+  client/.style={blue!75!black,->,line width=.75pt},
+  server/.style={green!50!black,->,line width=.75pt},
+  life/.style={red!75!black,dashed,->,line width=.55pt},
+  msg/.style={font=\sffamily\fontsize{7.5}{8.5}\selectfont,inner sep=1pt}]
+  \node[text=blue!75!black,font=\sffamily\fontsize{10}{11}\selectfont] at (3.8,4.85) {Client};
+  \node[text=green!50!black,font=\sffamily\fontsize{10}{11}\selectfont] at (8.5,4.85) {Server};
+  \draw[life] (3.8,4.5) -- (3.8,0);
+  \draw[life] (8.5,4.5) -- (8.5,0);
+  \node[anchor=east,font=\ttfamily\bfseries\fontsize{8}{9}\selectfont] at (3.65,4.15) {clientSocket.close()};
+  \node[align=right,anchor=east] at (3.65,3.15) {can no longer send app\\data but can receive data};
+  \node[anchor=east] at (3.65,2.13) {wait for server close};
+  \node[align=left,anchor=west] at (8.68,1.25) {can no longer\\send app data};
+  \draw[client] (3.9,4.20) -- node[msg,sloped,above] {FINbit = 1, seq = $u$} (8.4,3.42);
+  \draw[server] (8.4,3.22) -- node[msg,sloped,above] {ACKbit = 1; ACKnum = $u+1$} (3.9,2.44);
+  \draw[server] (8.4,2.31) -- node[msg,sloped,above] {FINbit = 1; seq = $t$} (3.9,1.53);
+  \draw[client] (3.9,1.34) -- node[msg,sloped,above] {ACKbit = 1, ACKnum = $t+1$} (8.4,.56);
+\end{tikzpicture}%
+}
 \end{compactfigure}
 
 \layerheading{layernetwork}{Layer 3 - Network Layer}
