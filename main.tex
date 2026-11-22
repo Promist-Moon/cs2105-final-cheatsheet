@@ -1008,6 +1008,8 @@ Divide shared broadcast channel into smaller, dedicated sub-channels and allocat
     \fill[black] (path picture bounding box.north east) -- ++(-0.11cm,0) -- ++(0.11cm,-0.11cm) -- cycle;
   }}
 ]
+  \node[font=\tiny,anchor=west,align=left] at (-0.18,-0.20) {1-bit fix: flip intersection\\of odd row and odd column};
+  \draw[->,thin] (2.23,-0.20) -- (2.90,-0.20);
   \node[font=\bfseries\scriptsize] at (0.86,1.55) {1D: detected};
   \foreach \x/\v in {1/0,2/1,3/1}
     \node[cell] at (\x*0.43,0.62) {\v};
