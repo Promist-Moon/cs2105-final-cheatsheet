@@ -672,9 +672,36 @@ Connection: \texttt{<srcIPAddr, srcPort, destIPAddr, destPort>}
 TCP send and receive buffers, created after handshaking at any side. Each TCP segment can carry Maximum Segment Size (MSS) in app-layer data.
 
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{transport/tcp-struct.png}
+\resizebox{0.9\linewidth}{!}{%
+\begin{tikzpicture}[x=0.18cm,y=0.38cm,font=\scriptsize]
+  \node[font=\tiny,anchor=south west] at (0,0.12) {0};
+  \node[font=\tiny,anchor=south] at (16,0.12) {16};
+  \node[font=\tiny,anchor=south east] at (32,0.12) {32 bits};
+  \draw (0,0) rectangle (32,-1);
+  \draw (16,0) -- (16,-1);
+  \node at (8,-0.5) {Source port (16)};
+  \node at (24,-0.5) {Destination port (16)};
+  \draw (0,-1) rectangle (32,-2);
+  \node at (16,-1.5) {Sequence number (32)};
+  \draw (0,-2) rectangle (32,-3);
+  \node at (16,-2.5) {Acknowledgment number (32)};
+  \draw (0,-3) rectangle (32,-4.3);
+  \draw (4,-3) -- (4,-4.3) (16,-3) -- (16,-4.3);
+  \node[font=\tiny] at (2,-3.65) {Offset};
+  \node[font=\fontsize{4}{4.6}\selectfont] at (10,-3.65) {\shortstack{Reserved + flags\\URG ACK PSH RST SYN FIN}};
+  \node at (24,-3.65) {Receive window (16)};
+  \draw (0,-4.3) rectangle (32,-5.3);
+  \draw (16,-4.3) -- (16,-5.3);
+  \node at (8,-4.8) {Checksum (16)};
+  \node at (24,-4.8) {Urgent pointer (16)};
+  \draw (0,-5.3) rectangle (32,-6.3);
+  \node at (16,-5.8) {Options + padding (0--40 bytes)};
+  \draw (0,-6.3) rectangle (32,-7.3);
+  \node at (16,-6.8) {Application data (variable)};
+\end{tikzpicture}%
+}
 \end{compactfigure}
-\textit{Seq. no.: } first byte of data in a segment. \textit{ACK no.: } Seq \# of the next byte of data expected by receiver.
+\textit{Flags:} URG, ACK, PSH, RST, SYN, FIN. \textit{Seq. no.: } first byte of data in a segment. \textit{ACK no.: } Seq \# of the next byte of data expected by receiver.
 
 TCP (and also UDP) is a full duplex protocol - bi-directional data flow in the same TCP connection.
 
