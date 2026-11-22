@@ -1108,7 +1108,8 @@ ARP broadcasts stay within the subnet.
 \item \textbf{R forwards:} R removes the frame, routes using B's IP, and resolves the next-hop MAC on its outgoing link (B's MAC only if B is directly connected).
 \item \textbf{Build a new frame:} R sends the datagram with source MAC = R's outgoing interface and destination MAC = the next hop. Later routers repeat this.
 \end{enumerate}
-\textbf{Remember:} IP source/destination normally stay A/B end-to-end; MAC source/destination change at each routed hop. The IP TTL decreases at routers.
+\textbf{Remember:} IP source/destination normally stay A/B end-to-end; MAC source/destination change at each routed hop. 
+IP TTL decreases by 1 at routers. If TTL = 0, discard packet and send ICMP error msg to source host.
 
 \subsection{Network Security}
 \textit{Confidentiality} only sender, intended
