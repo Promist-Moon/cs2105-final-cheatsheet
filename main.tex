@@ -1447,9 +1447,12 @@ mappings expire after the TTL.
 \item On cache miss, A broadcasts ARP query for B's IP with dest. \texttt{FF-FF-FF-FF-FF-FF} (broadcast addr.)
 \item B replies with a unicase frame containing its MAC; A caches the mapping and sends the frame.
 \end{enumerate}
+\vspace{-2pt}
 ARP broadcasts stay within the subnet.
 
+\vspace{-1pt}
 \textbf{Sending to a Different Subnet} (host A $\rightarrow$ host B via gateway R)
+\vspace{-2pt}
 \begin{compactfigure}
 % Computer icon based on misc/computer.svg, drawn as vector paths for pdfLaTeX.
 \newcommand{\lancomputer}{\tikz[baseline=-.15ex,x=.045cm,y=.045cm]{%
@@ -1460,7 +1463,7 @@ ARP broadcasts stay within the subnet.
   \begin{tikzpicture}[>=Stealth, font=\scriptsize,
       host/.style={align=center,inner sep=1pt},
       lan/.style={draw,rounded corners=3pt,fill=cyan!18,minimum width=1.35cm,minimum height=1.15cm,align=center},
-    addr/.style={font=\tiny,align=center,inner sep=1pt}]
+    addr/.style={font=\fontsize{6.5}{7.2}\selectfont,align=center,inner sep=1pt}]
     % Each router interface belongs to the LAN it connects to.
     \node[host] (a) at (0,1.7) {\lancomputer\\Host A};
     \node[host] (a2) at (0,-.5) {\lancomputer\\Host};
