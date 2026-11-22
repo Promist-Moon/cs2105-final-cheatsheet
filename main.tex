@@ -889,7 +889,7 @@ Exchange routing table every 30 seconds over UDP port 520.
 \textbf{IPv4\\Datagram}
 \vspace{-2.2em}
 \begin{compactfigure}\raggedleft
-\resizebox{0.75\linewidth}{!}{%
+\resizebox{0.85\linewidth}{!}{%
 \begin{tikzpicture}[x=1cm,y=1cm,>=Stealth,
   font=\sffamily\fontsize{16}{18}\selectfont]
   % The five purple rows are the minimum 20-byte IPv4 header.
@@ -937,8 +937,8 @@ Exchange routing table every 30 seconds over UDP port 520.
 \noindent\begin{tabularx}{\linewidth}{|>{\raggedright\arraybackslash}p{.17\linewidth}|>{\raggedright\arraybackslash}X|}
 \hline
 \rowcolor{gray!15}\textbf{Splitting} & \textbf{What happens} \\\hline
-\textbf{TCP} & TCP splits app stream; each segment has a TCP header. TCP orders data at receiver. \\\hline
-\textbf{IPv4} & IP splits datagram payload; each fragment has an IP header and shared ID. IP reassembles at destination. \\\hline
+\textbf{TCP} & Sender TCP splits app stream; each segment has a TCP header. Receiver TCP orders data. \\\hline
+\textbf{IPv4} & Sender IP or router splits payload; each fragment has an IP header and shared ID. IP reassembles at destination. \\\hline
 \end{tabularx}\par
 \raggedright\textbf{IP payload:} TCP header is normally only in the first fragment, not copied; it can span fragments. Non-final fragment payloads must be multiples of 8 bytes.\par
 \textbf{Offset:} preceding IP payload bytes $\div 8$ (include TCP header, exclude IP headers).\par
@@ -946,13 +946,13 @@ Exchange routing table every 30 seconds over UDP port 520.
 \textbf{MF:} 0 = last or unfragmented; 1 = more fragments.\par\endgroup
 
 \begin{compactfigure}
-\includegraphics[width=0.95\linewidth]{network/ip-fragmentation.png}
+\includegraphics[width=1\linewidth]{network/ip-fragmentation.png}
 \end{compactfigure}
 
 \subsection{Network Address Translation (NAT)}
 Maps one IP addresses space into another \texttt{<source IP, source port, dest IP, dest port>}. One table entry is $4 + 2 + 4 + 2 =12 \text{ bytes}$
 \begin{compactfigure}
-\includegraphics[width=0.9\linewidth]{network/nat.png}
+\includegraphics[width=1\linewidth]{network/nat.png}
 \end{compactfigure}
 \begin{itemize}
 \item Replace (source IP address, port \#) of every outgoing datagram to (NAT IP address, new port \#).
