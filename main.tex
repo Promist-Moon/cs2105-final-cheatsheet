@@ -700,8 +700,9 @@ TCP feedback allows at most one retransmission of old tickets, but multiple retr
 \textbf{TCP Timeout Interval} TCP continuously updates timeout interval based on estimated RTT.
 
 $\text{Est.RTT} = (1-\alpha)\text{Est.RTT} +\alpha\text{SampleRTT}$,\\
-$\text{DevRTT} = (1-\beta)\text{DevRTT} +\beta\left|\text{SampleRTT} \text{Est.RTT}\right|$,\\
-$\text{TimeoutInterval} = \text{Est.RTT}+4\text{DevRTT}$
+$\text{DevRTT} = (1-\beta)\text{DevRTT+}\beta\left|\text{SampleRTT}-\text{EstRTT}\right|$\\
+$\text{TimeoutInterval} = \text{Est.RTT}+4\text{DevRTT}$\\
+Typically, $\alpha=0.125$,$\beta=0.25$
 
 \textbf{TCP Handshake}
 \textit{Establishing Connection}
