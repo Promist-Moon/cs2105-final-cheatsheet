@@ -936,8 +936,8 @@ Exchange routing table every 30 seconds over UDP port 520.
 \noindent\begin{tabularx}{\linewidth}{|>{\raggedright\arraybackslash}p{.17\linewidth}|>{\raggedright\arraybackslash}X|}
 \hline
 \rowcolor{gray!15}\textbf{Splitting} & \textbf{What happens} \\\hline
-\textbf{TCP} & TCP splits app stream; each segment has a TCP header. TCP orders data at receiver. \\\hline
-\textbf{IPv4} & IP splits datagram payload; each fragment has an IP header and shared ID. IP reassembles at destination. \\\hline
+\textbf{TCP} & Sender TCP splits app stream; each segment has a TCP header. Receiver TCP orders data. \\\hline
+\textbf{IPv4} & Sender IP or router splits payload; each fragment has an IP header and shared ID. IP reassembles at destination. \\\hline
 \end{tabularx}\par
 \raggedright\textbf{IP payload:} TCP header is normally only in the first fragment, not copied; it can span fragments. Non-final fragment payloads must be multiples of 8 bytes.\par
 \textbf{Offset:} preceding IP payload bytes $\div 8$ (include TCP header, exclude IP headers).\par
