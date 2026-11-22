@@ -65,19 +65,19 @@
 \fancyhf{}
 \fancyfoot[C]{%
   \ifnum\value{page}=\getpagerefnumber{LastPage}\relax
-    \smash{\raisebox{42pt}{\parbox{\textwidth}{\normalsize
-      \textbf{Network commands}\\[-1pt]\hrule\vspace{2pt}
+    \smash{\raisebox{11pt}{\parbox{\textwidth}{\footnotesize
+      \hrule\vspace{2pt}
       \begin{tabularx}{\textwidth}{@{}*{4}{>{\raggedright\arraybackslash}X}@{}}
-        \texttt{ping}: tests reachability and round-trip time (network/ICMP) &
-        \texttt{traceroute}: shows hops and delays to a destination (network) &
-        \texttt{ifconfig}: shows interface IP, MAC and MTU (link/network) &
-        \texttt{ip}: shows interfaces, addresses, routes and neighbours (link/network) \\
-        \texttt{arp}: shows local IP--MAC mappings (link) &
+        \texttt{ping}: reachability and RTT (network/ICMP) &
+        \texttt{traceroute}: destination hops and delays (network) &
+        \texttt{ifconfig}: interface IP, MAC and MTU (link/network) &
+        \texttt{ip}: interfaces, routes, neighbours (link/network) \\
+        \texttt{arp}: local IP--MAC mappings (link) &
         \texttt{nslookup}: queries DNS records (application/DNS) &
-        \texttt{dig}: performs detailed DNS queries (application/DNS) &
-        \texttt{curl}: sends web requests; can show headers (application/HTTP(S))
+        \texttt{dig}: detailed DNS queries (application/DNS) &
+        \texttt{curl}: HTTP(S) requests, headers (application)
       \end{tabularx}
-      \vspace{1pt}\centering\tiny Cheatsheet made by Emilia Ayu, Chow Bing Hang, and Nathan Tew
+      \vspace{1pt}\centering\smash{\raisebox{-2pt}{\tiny Cheatsheet made by Emilia Ayu, Chow Bing Hang, and Nathan Tew}}
     }}}%
   \else
     \tiny Cheatsheet made by Emilia Ayu, Chow Bing Hang, and Nathan Tew
@@ -399,7 +399,6 @@
 }
 
 \begin{document}
-\linespread{0.93}\selectfont
 \footnotesize % base font size for body text; tune to 8pt/9pt/tiny as needed
 
 % ============================================================
