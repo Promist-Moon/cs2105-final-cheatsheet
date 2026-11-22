@@ -593,7 +593,34 @@
 
   Checksum calculation:
   \begin{compactfigure}
-    \includegraphics[width=0.75\linewidth]{transport/checksum.png}
+    \resizebox{0.75\linewidth}{!}{%
+      \begin{tikzpicture}[x=1cm,y=1cm,>=Stealth,
+          bit/.style={font=\normalfont\sffamily\mdseries\fontsize{11}{12}\selectfont,inner sep=0pt},
+          note/.style={font=\sffamily\fontsize{8}{9}\selectfont,text=blue!75!black,inner sep=0pt}]
+        % Digits stay aligned in four-bit groups on every line.
+        \foreach \row/\bits in {
+          2.25/{1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0},
+          1.85/{1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+          1.25/{1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1},
+          .55/{1,0,1,1,1,0,1,1,1,0,1,1,1,1,0,0},
+          .15/{0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,1}} {
+          \foreach \bit [count=\i from 0] in \bits {
+            \pgfmathsetmacro{\bitx}{2.0 + .30*\i + .16*floor(\i/4)}
+            \node[bit] at (\bitx,\row) {\bit};
+          }
+        }
+        \draw[line width=.3pt] (1.92,1.58) -- (7.04,1.58);
+        \draw[line width=.3pt] (1.92,.90) -- (7.04,.90);
+        \node[bit] (carry) at (1.70,1.25) {1};
+        \draw[red,line width=.35pt] (carry) circle[radius=.14cm];
+        \draw[red,->,line width=.35pt] (1.70,1.10) -- (1.70,1.00) -- (6.95,1.00);
+        \draw[red,line width=.35pt] (6.27,1.08) rectangle (6.49,2.42);
+        \node[note,align=left,anchor=west] at (.18,1.74) {wraparound\\carry};
+        \draw[blue!75!black,->,line width=.35pt] (1.30,1.66) -- (1.52,1.34);
+        \node[note,anchor=east] at (1.72,.55) {sum};
+        \node[note,align=center,anchor=east] at (1.72,.08) {Checksum\\(1's complement)};
+      \end{tikzpicture}%
+    }
   \end{compactfigure}
 
   \subsection{Reliable Data Transfer (RDT)}
@@ -1244,7 +1271,33 @@ to sending NIC. Uses CSMA/CD with exponential backoff.
 
 \textbf{Ethernet Frame Structure}
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{link/ethernet-addr.png}
+\resizebox{0.95\linewidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=1cm,font=\sffamily\fontsize{10}{11}\selectfont]
+  \fill[gray!25] (5.7,0) rectangle (10.35,.95);
+  \draw[line width=.65pt] (0,0) rectangle (11.6,.95);
+  \draw[line width=.65pt] (2.3,0) -- (2.3,.95)
+    (3.5,0) -- (3.5,.95) (4.7,0) -- (4.7,.95)
+    (5.7,0) -- (5.7,.95) (10.35,0) -- (10.35,.95);
+  % A white zigzag break shows that the data field is not to scale.
+  \fill[white] (9.25,.95) -- (8.98,.52) -- (9.55,.52)
+    -- (9.35,0) -- (9.57,0) -- (9.78,.68)
+    -- (9.23,.68) -- (9.45,.95) -- cycle;
+  \draw[line width=.65pt] (9.25,.95) -- (8.98,.52) -- (9.55,.52) -- (9.35,0);
+  \draw[line width=.65pt] (9.45,.95) -- (9.23,.68) -- (9.78,.68) -- (9.57,0);
+  \node at (1.15,.48) {Preamble};
+  \node[align=center] at (2.9,.48) {Dest\\Addr};
+  \node[align=center] at (4.1,.48) {Src\\Addr};
+  \node at (5.2,.48) {Type};
+  \node at (7.75,.48) {Data};
+  \node at (10.98,.48) {CRC};
+  \node at (1.15,1.23) {8 bytes};
+  \node at (2.9,1.23) {6};
+  \node at (4.1,1.23) {6};
+  \node at (5.2,1.23) {2};
+  \node at (7.9,1.23) {46--1500};
+  \node at (10.98,1.23) {4};
+\end{tikzpicture}%
+}
 \end{compactfigure}
 \textbf{Source \& Dest. MAC Addr}
 If NIC receives a frame with matching destination MAC address, or with broadcast address, it passes data in the frame to network layer protocol. Otherwise, NIC discards frame.
