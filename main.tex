@@ -8,7 +8,7 @@
 \usepackage[a4paper, landscape, margin=0.4cm]{geometry}
 
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes.geometric}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, decorations.pathreplacing}
 
 \usepackage{amsmath}
 \usepackage{array}
@@ -916,7 +916,29 @@ No time slots, no synchronisation. When fresh frame:
 \textit{Maximum efficiency: } $\tfrac{1}{2e}$
 
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{link/unslotted-aloha.png}
+\resizebox{0.85\linewidth}{!}{%
+  \definecolor{alohaFrame}{RGB}{228,242,251}
+  \definecolor{alohaNode}{RGB}{204,233,250}
+  \definecolor{alohaBrace}{RGB}{0,114,188}
+  \begin{tikzpicture}[x=0.75cm,y=0.65cm,font=\scriptsize]
+    % A frame is vulnerable to transmissions starting one frame time either side of t_0.
+    \node[anchor=south,align=left,inner sep=0pt,font=\scriptsize] at (3.5,3.65)
+      {Frames sent here\\\textcolor{red!80!black}{\textit{collide}} with the\\start of i's frame};
+    \node[anchor=south,align=left,inner sep=0pt,font=\scriptsize] at (6.5,3.65)
+      {Frames sent here\\\textcolor{red!80!black}{\textit{collide}} with the\\end of i's frame};
+    \draw[alohaBrace,semithick,decorate,decoration={brace,amplitude=3pt}] (2,3.5) -- (5,3.5);
+    \draw[alohaBrace,semithick,decorate,decoration={brace,amplitude=3pt}] (5,3.5) -- (8,3.5);
+    \filldraw[fill=alohaFrame,draw=black] (2.6,2.7) rectangle (5.6,3.25);
+    \filldraw[fill=alohaNode,draw=black] (5,1.85) rectangle (8,2.4);
+    \node[font=\scriptsize] at (6.5,2.125) {Node i frame};
+    \filldraw[fill=alohaFrame,draw=black] (7.1,1.0) rectangle (10.1,1.55);
+    \draw[->] (0,0.55) -- (10.5,0.55) node[right] {Time};
+    \foreach \x in {0,2,5,8} \draw (\x,0.4) -- (\x,0.7);
+    \node[below,font=\scriptsize] at (2,0.4) {$t_0-1$};
+    \node[below,font=\scriptsize] at (5,0.4) {$t_0$};
+    \node[below,font=\scriptsize] at (8,0.4) {$t_0+1$};
+  \end{tikzpicture}%
+}
 \end{compactfigure}
 
 \textbf{Limitations of both ALOHAs: } nodes transmit w/o checking if other nodes in the channel are transmitting
@@ -932,7 +954,68 @@ If collision detected, abort transmission and retransmit after random delay (bac
 Becomes TCP's problem past 16 collisions.
 
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{link/csma.png}
+\resizebox{0.88\linewidth}{!}{%
+  \definecolor{csmagreen}{RGB}{86,198,157}
+  \definecolor{csmared}{RGB}{242,129,131}
+  \definecolor{csmaoverlap}{RGB}{128,104,79}
+  \begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize]
+    % Each panel plots the position of nodes horizontally and time downward.
+    \foreach \shift/\caption in {0/CSMA,5.5/{CSMA/CD}} {
+      \begin{scope}[xshift=\shift cm]
+        \node[font=\scriptsize] at (2.25,0.50) {spatial layout of nodes};
+        \draw[thick] (0,0) -- (4.5,0);
+        \foreach \x/\name in {0.55/A,1.5/B,2.6/C,3.75/D} {
+          \draw (\x,0.10) -- (\x,-0.10);
+          \node[above,font=\scriptsize] at (\x,0.10) {\name};
+        }
+        \draw[densely dotted] (0,-0.6) -- (4.5,-0.6);
+        \draw[densely dotted] (1.5,0) -- (1.5,-5.15);
+        \draw[densely dotted] (3.75,0) -- (3.75,-5.15);
+        \node[left] at (0,-0.6) {$t_0$};
+        \draw[->,thick] (0,0) -- (0,-5.15) node[below,font=\scriptsize] {time};
+        \draw[->,thick] (4.5,0) -- (4.5,-5.15);
+        \node[text=red!85!black,font=\bfseries\normalsize] at (2.25,-5.1) {\caption};
+      \end{scope}
+    }
+    % CSMA: both transmitters continue after the collision.
+    \begin{scope}
+      \clip (0,-0.6) rectangle (4.5,-5.15);
+      \fill[csmagreen] (0,-1.18) -- (1.5,-0.6) -- (4.5,-1.8) -- (4.5,-4.85) -- (1.5,-3.82) -- (0,-4.4) -- cycle;
+      \fill[csmared] (0,-2.1) -- (3.75,-0.6) -- (4.5,-0.95) -- (4.5,-4.35) -- (3.75,-4.0) -- (0,-5.25) -- cycle;
+      \begin{scope}
+        \clip (0,-1.18) -- (1.5,-0.6) -- (4.5,-1.8) -- (4.5,-4.85) -- (1.5,-3.82) -- (0,-4.4) -- cycle;
+        \fill[csmaoverlap] (0,-2.1) -- (3.75,-0.6) -- (4.5,-0.95) -- (4.5,-4.35) -- (3.75,-4.0) -- (0,-5.25) -- cycle;
+      \end{scope}
+    \end{scope}
+    \draw[densely dotted,black!70] (1.5,-0.6) -- (1.5,-2.7);
+    \draw[densely dotted,black!70] (3.75,-0.6) -- (3.75,-2.7);
+    \draw[->] (0.75,-2.75) -- (1.5,-1.5);
+    \draw[->] (2.95,-2.75) -- (3.75,-1.5);
+    \node[anchor=north west,align=left,font=\scriptsize] at (0.18,-2.8) {B detects\\collision,\\continues\\transmission};
+    \node[anchor=north west,align=left,font=\scriptsize] at (2.20,-2.8) {D detects\\collision,\\continues\\transmission};
+    % CSMA/CD: both transmitters stop when they detect the collision.
+    \begin{scope}[xshift=5.5cm]
+      \begin{scope}
+        \clip (0,-0.6) rectangle (4.5,-5.15);
+        \fill[csmagreen] (0,-1.18) -- (1.5,-0.6) -- (4.5,-1.8) -- (4.5,-3.15) -- (1.5,-1.98) -- (0,-2.7) -- cycle;
+        \fill[csmared] (0,-2.1) -- (3.75,-0.6) -- (4.5,-0.95) -- (4.5,-2.12) -- (3.75,-1.8) -- (0,-3.45) -- cycle;
+        \begin{scope}
+          \clip (0,-1.18) -- (1.5,-0.6) -- (4.5,-1.8) -- (4.5,-3.15) -- (1.5,-1.98) -- (0,-2.7) -- cycle;
+          \fill[csmaoverlap] (0,-2.1) -- (3.75,-0.6) -- (4.5,-0.95) -- (4.5,-2.12) -- (3.75,-1.8) -- (0,-3.45) -- cycle;
+        \end{scope}
+      \end{scope}
+      \draw[densely dotted,black!70] (1.5,-0.6) -- (1.5,-2.7);
+      \draw[densely dotted,black!70] (3.75,-0.6) -- (3.75,-2.7);
+      \draw[decorate,decoration={brace,amplitude=2pt}] (1.5,-1.5) -- (1.5,-1.98);
+      \draw[decorate,decoration={brace,amplitude=2pt}] (3.75,-1.5) -- (3.75,-1.8);
+      \draw[->] (0.75,-2.75) -- (1.5,-1.5);
+      \draw[->] (2.95,-2.75) -- (3.75,-1.5);
+      \node[anchor=north west,align=left,font=\scriptsize] at (0.18,-2.8) {B detects\\collision,\\aborts};
+      \node[anchor=north west,align=left,font=\scriptsize] at (2.20,-2.8) {D detects\\collision,\\aborts};
+      \node[anchor=north west,align=left,font=\tiny] at (0.35,-4.1) {Abort after detection instead of wasting\\the whole frame transmission time.};
+    \end{scope}
+  \end{tikzpicture}%
+}
 \end{compactfigure}
 
 \begin{center}
@@ -1002,10 +1085,46 @@ Divide shared broadcast channel into smaller, dedicated sub-channels and allocat
 
 \subsection{Error Detection}
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{link/error-d.png}
+\resizebox{0.94\linewidth}{!}{%
+  \begin{tikzpicture}[
+    font=\scriptsize,
+    flow/.style={->,red!80!black,semithick},
+    packet/.style={draw,fill=white,minimum height=0.42cm,inner sep=1pt},
+    check/.style={diamond,draw=red!80!black,aspect=2,align=center,inner sep=1pt,font=\tiny}
+  ]
+    % Offset blue backing gives the packets the original layered effect.
+    \fill[blue!80!black] (0.30,2.76) rectangle (1.95,3.18);
+    \node[packet,minimum width=1.65cm] (sent) at (1.05,2.9) {datagram};
+    \fill[blue!80!black] (4.50,2.76) rectangle (6.15,3.18);
+    \node[packet,minimum width=1.65cm] (received) at (5.25,2.9) {datagram};
+    \draw[flow] (sent.south) -- (1.05,1.48);
+    \fill[blue!80!black] (0.23,1.08) rectangle (2.93,1.53);
+    \filldraw[fill=white,draw=black] (0.15,1.0) rectangle (2.85,1.45);
+    \draw (2.0,1.0) -- (2.0,1.45);
+    \node at (1.075,1.225) {$D$};
+    \node at (2.425,1.225) {EDC};
+    \draw[<->,thin] (0.15,1.58) -- node[above,font=\tiny] {$d$ data bits} (2.0,1.58);
+    \fill[blue!80!black] (4.43,1.08) rectangle (7.13,1.53);
+    \filldraw[fill=white,draw=black] (4.35,1.0) rectangle (7.05,1.45);
+    \draw (6.2,1.0) -- (6.2,1.45);
+    \node at (5.275,1.225) {$D'$};
+    \node at (6.625,1.225) {EDC$'$};
+    \node[draw,rounded corners=3pt,minimum width=2.3cm,minimum height=0.45cm] (link) at (3.2,0.18) {bit-error prone link};
+    \draw[flow] (1.05,1.0) |- (link.west);
+    \draw[flow] (link.east) -| (5.25,1.0);
+    \node[check] (decision) at (5.25,2.05) {EDC check\\passes?};
+    \draw[flow] (5.25,1.45) -- (decision.south);
+    \draw[flow] (decision.north) -- node[right,font=\tiny,text=black] {Y} (received.south);
+    \node[font=\tiny,anchor=east,align=right] at (4.75,2.58) {no error\\detected};
+    \draw[flow] (decision.east) -- ++(0.9,0) node[right,font=\tiny,text=black,align=left] {N: error\\detected};
+    \node[anchor=west,font=\tiny,align=left] at (0.15,-0.45) {$D$: protected data (may include headers); EDC: error detection/correction bits};
+  \end{tikzpicture}%
+}
 \end{compactfigure}
 
-\textbf{Parity Checking} Even parity adds bits so each checked group has an even number of 1s. \textbf{1D:} detects odd numbers of flipped bits; even numbers may go undetected.
+\textbf{Parity Checking} Even parity adds bits so each checked group has an even number of 1s.
+
+\textbf{1D:} detects odd numbers of flipped bits; even numbers may go undetected.
 
 \textbf{2D:} Detects any 1- or 2-bit error; corrects 1-bit errors, but not all 2-bit errors. Four flips at a rectangle's corners may go undetected.
 \begin{compactfigure}
@@ -1048,13 +1167,33 @@ Divide shared broadcast channel into smaller, dedicated sub-channels and allocat
 }
 \end{compactfigure}
 
+\noindent\begin{minipage}{\linewidth}
 \textbf{Cyclic Redundancy Check (CRC)}
 \begin{compactfigure}
-\includegraphics[width=0.48\linewidth]{link/crc.png}
-\includegraphics[width=0.48\linewidth]{link/crc-div.png}
+\begin{minipage}[t]{0.46\linewidth}
+  \fontsize{5.6}{6.5}\selectfont\raggedright
+  \textbf{Decimal analogy} (not CRC)\\
+  $D=21027845$, $G=401$, $r=3$ digits.\\
+  $X=D\cdot10^3+999=21027845999$.\\
+  $y=X\bmod G=281$.\\
+  $M=X-y=21027845718$.\\
+  $M$ is divisible by $G$; the nines prevent borrowing from $D$.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.52\linewidth}
+  \fontsize{5.6}{6.5}\selectfont\raggedright\setlength{\fboxsep}{0.4pt}
+  \textbf{Binary CRC} (XOR; $\downarrow$ = bring down)\\
+  $D=\colorbox{cyan!25}{\texttt{101110}}$, $G=\colorbox{violet!25}{\texttt{1001}}$, $r=4-1=3$.\\
+  Divide $\texttt{101110000}$ by $G$:\\
+  \texttt{1011 $\oplus$ 1001 = 0010} $\downarrow\texttt{10}$\\
+  \texttt{1010 $\oplus$ 1001 = 0011} $\downarrow\texttt{00}$\\
+  \texttt{1100 $\oplus$ 1001 = 0101} $\downarrow\texttt{0}$\\
+  \texttt{1010 $\oplus$ 1001 = 0011}\\
+  $R=\colorbox{yellow!55}{\texttt{011}}$; send $D\Vert R=\texttt{101110011}$.
+\end{minipage}
 \end{compactfigure}
+\end{minipage}
 Sender sends $(D, R)$. Receiver knows $G$, divide $(D, R)$ by $G$. Error when non-zero remainder.
-Easy to implement on hardware, can detect all odd-number of single bit errors. CRC of $r$ bits can detect all burst errors of up to $r$ bits, and all burst errors of greater than $r$ bits with probability $1-0.5^r$
+Easy to implement on hardware. If $G(x)$ has factor $(x+1)$, CRC detects all odd-numbered bit errors. CRC of $r$ bits can detect all burst errors of up to $r$ bits, and all burst errors of greater than $r$ bits with probability $1-0.5^r$
 
 \subsection{Local Area Network (LAN)}
 Computer network that interconnects computers within a geographical area such as office building or university campus.
@@ -1101,7 +1240,52 @@ forward only there; known on the incoming port $\rightarrow$ filter/drop;
 unknown (or broadcast) $\rightarrow$ flood all ports except the incoming one.
 
 \begin{compactfigure}
-\includegraphics[width=0.75\linewidth]{link/switch-eg.png}
+\resizebox{0.84\linewidth}{!}{%
+  \begin{tikzpicture}[
+    x=0.8cm,y=0.55cm,
+    host/.style={draw,fill=blue!8,minimum width=0.52cm,minimum height=0.33cm,inner sep=0pt},
+    switch/.style={draw,fill=blue!18,minimum width=0.65cm,minimum height=0.35cm,inner sep=0pt,font=\bfseries\tiny},
+    port/.style={font=\bfseries\scriptsize,text=red!75!black},
+    label/.style={font=\bfseries\scriptsize}
+  ]
+    \node[font=\bfseries\scriptsize,anchor=west] at (1.25,4.3) {At $t=3$: B $\leftrightarrow$ L};
+    % Links and numbered switch interfaces.
+    \draw (3,1.6) -- (7,1.6);
+    \foreach \x/\y in {3/3.4,4.3/3.0,1.6/2.45,1.6/0.65,3/-0.2,4.3/0.15}
+      \draw (3,1.6) -- (\x,\y);
+    \foreach \x/\y in {7/3.4,5.7/3.0,8.4/2.45,8.4/0.65,7/-0.2,5.7/0.15}
+      \draw (7,1.6) -- (\x,\y);
+    \node[switch] at (3,1.6) {S1};
+    \node[switch] at (7,1.6) {S2};
+    \foreach \x/\y/\name in {3/3.4/G,4.3/3.0/H,1.6/2.45/L,1.6/0.65/K,3/-0.2/J,4.3/0.15/I,7/3.4/A,5.7/3.0/F,8.4/2.45/B,8.4/0.65/C,7/-0.2/D,5.7/0.15/E} {
+      \node[host] at (\x,\y) {};
+      \node[label,above=1pt] at (\x,\y) {\name};
+    }
+    \foreach \x/\y/\n in {3.15/2.12/10,3.62/2.03/11,2.38/1.99/15,2.38/1.23/14,3.13/1.02/13,3.65/1.08/12,4.1/1.8/8,5.9/1.8/7,7.15/2.12/1,7.62/2.03/2,7.62/1.23/3,7.13/1.02/4,6.35/1.08/5,6.35/2.03/6}
+      \node[port] at (\x,\y) {\n};
+    % Forwarding-table rows: the struck-out TTL is refreshed to 60.
+    \node[anchor=north] at (2.85,-0.8) {%
+      \begingroup\fontsize{5.5}{6.3}\selectfont\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{1.03}
+      \begin{tabular}{ccc}
+        \rowcolor{blue!60!black!70}\textcolor{white}{\textbf{MAC addr}} & \textcolor{white}{\textbf{Interface}} & \textcolor{white}{\textbf{TTL}} \\
+        \rowcolor{blue!15} B & 8 & \textcolor{red}{\sout{\textcolor{black}{58}}} 60 \\
+        \rowcolor{blue!8} L & 15 & \textcolor{red}{\sout{\textcolor{black}{58}}} 60 \\
+        \rowcolor{blue!15} E & 8 & 59 \\
+        \rowcolor{blue!8} & & \\
+      \end{tabular}\endgroup
+    };
+    \node[anchor=north] at (7.15,-0.8) {%
+      \begingroup\fontsize{5.5}{6.3}\selectfont\setlength{\tabcolsep}{2pt}\renewcommand{\arraystretch}{1.03}
+      \begin{tabular}{ccc}
+        \rowcolor{blue!60!black!70}\textcolor{white}{\textbf{MAC addr}} & \textcolor{white}{\textbf{Interface}} & \textcolor{white}{\textbf{TTL}} \\
+        \rowcolor{blue!15} B & 2 & \textcolor{red}{\sout{\textcolor{black}{58}}} 60 \\
+        \rowcolor{blue!8} L & 7 & \textcolor{red}{\sout{\textcolor{black}{58}}} 60 \\
+        \rowcolor{blue!15} E & 5 & 59 \\
+        \rowcolor{blue!8} D & 4 & 59 \\
+      \end{tabular}\endgroup
+    };
+  \end{tikzpicture}%
+}
 \end{compactfigure}
 
 \subsection{MAC (Media Access Control) Address}
